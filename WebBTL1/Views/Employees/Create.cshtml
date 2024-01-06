@@ -1,0 +1,233 @@
+﻿@model WebBTL1.Models.Employee
+
+@{
+	ViewData["Title"] = "Create";
+}
+<hr />
+@*<div class="row">
+	<div class="col-md-4">
+
+*@
+<div class="container">
+	<div asp-validation-summary="All"></div>
+
+	<form asp-action="Create">
+		<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+		<div class="row">
+			<div class="col-sm">
+				<div class="form-group">
+					<label asp-for="Name" class="control-label">1. Name</label>
+					<input asp-for="Name" class="form-control" />
+					<span asp-validation-for="Name" class="text-danger"></span>
+				</div>
+			</div>
+
+			<div class="col-sm">
+				<div class="form-group">
+					<label asp-for="Dob" class="control-label">2. Dob</label>
+					<input asp-for="Dob" type="date" class="form-control" />
+					<span asp-validation-for="Dob" class="text-danger"></span>
+				</div>
+			</div>
+
+			<div class="col-sm">
+				<div class="form-group">
+					<label asp-for="Ethnic" class="control-label">3. Ethnic</label>
+					<select asp-for="Ethnic" asp-items="ViewBag.EthnicList" class="form-control">
+						<option value="">Select Ethinic</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="col-sm">
+				<div class="form-group">
+					<label asp-for="Job" class="control-label">4. Job</label>
+					<select asp-for="Job" asp-items="ViewBag.JobList" class="form-control">
+						<option value="">Select Job</option>
+					</select>
+					<span asp-validation-for="Job" class="text-danger"></span>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm">
+				<div class="form-group">
+					<label asp-for="IdentityNumber" class="control-label">5. IdentityNumber</label>
+					<input id="identity" asp-for="IdentityNumber" class="form-control" />
+					<input type="checkbox" id="noIdentity" name="noIdentity" value="noIdentity" />
+					<label>No Identity</label>
+					<span id="identityError" asp-validation-for="IdentityNumber" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="col-sm">
+				<div class="form-group">
+					<label asp-for="PhoneNumber" class="control-label">6. Phone</label>
+					<input id="phone" asp-for="PhoneNumber" class="form-control" />
+					<input type="checkbox" id="noPhone" name="noPhone" value="noPhone" />
+					<label>No Phone</label>
+					<span id="phoneError" asp-validation-for="PhoneNumber" class="text-danger"></span>
+				</div>
+			</div><div class="col-sm">
+			</div><div class="col-sm">
+			</div>
+		</div>
+		<p>7. Address</p>
+		<div class="row">
+			<div class="col-sm">
+				<div class="form-group">
+					<label asp-for="Province" class="control-label">Province</label>
+					<select id="provinceId" asp-for="Province" asp-items="ViewBag.ProvinceList" class="form-control province">
+						<option value="">Select Province</option>
+					</select>
+					<span asp-validation-for="Province" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="col-sm">
+				<div class="form-group">
+					<label asp-for="District" class="control-label">District</label>
+					<select id="districtId" asp-for="District" asp-items="ViewBag.DistrictList" class="form-control district">
+						<option value="">Select District</option>
+					</select>
+					<span asp-validation-for="District" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="col-sm">
+				<div class="form-group">
+					<label asp-for="Commune" class="control-label">Commune</label>
+					<select id="communeId" asp-for="Commune" asp-items="ViewBag.CommuneList" class="form-control commune">
+						<option value="">Select Commune</option>
+					</select>
+					<span asp-validation-for="Commune" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="col-sm">
+				<label asp-for="Description" class="control-label">Description</label>
+				<input asp-for="Description" class="form-control" />
+				<span asp-validation-for="Description" class="text-danger"></span>
+			</div>
+		</div>
+		<hr />
+		<div class="row">
+			<div class="col-sm">
+				<div>
+					<a asp-action="Index">Back to List</a>
+				</div>
+
+			</div>
+			<div class="col-sm"></div>
+			<div class="col-sm"></div>
+			<div class="col-sm d-flex flex-row-reverse">
+				<button id="submit" type="submit" value="Create" class="btn btn-primary">Submit</button>
+			</div>
+
+		</div>
+
+	</form>
+
+</div>
+
+<script>
+	const noPhone = document.getElementById("noPhone");
+	const noIdentity = document.getElementById("noIdentity");
+	const phone = document.getElementById("phone");
+	const identity = document.getElementById("identity");
+	const phoneError = document.getElementById("phoneError");
+	const identityError = document.getElementById("identityError");
+
+	noPhone.addEventListener('click', function () {
+		if (noPhone.checked) {
+			phone.style.display = "none";
+			phoneError.style.display = "none";
+		} else {
+			phone.style.display = "block"
+			phoneError.style.display = "span";
+		}
+	});
+	noIdentity.addEventListener('click', function () {
+		if (noIdentity.checked) {
+			identity.style.display = "none";
+			identityError.style.display = "none";
+		}
+		else {
+			identity.style.display = "block";
+			identityError.style.display = "span";
+		}
+	});
+</script>
+
+@section Scripts {
+	<script>
+		$(document).ready(function () {
+			getProvince();
+			getDistrictByProvinceId();
+			getCommuneByDistrictId();
+		})
+
+		var getProvince = function () {
+			$.ajax({
+				url: '@Url.Action("GetProvince", "Provinces")',
+				type: 'GET',
+				success: function (data) {
+					$(data).each(
+						function (index, item) {
+							$('#provinceId').append('<option value="' + item.id + '">' + item.name + '</option>');
+						}
+					)
+				}
+			});
+		}
+
+		$("#provinceId").change(function () {
+			getDistrictByProvinceId();
+		})
+
+		var getDistrictByProvinceId = function () {
+			$.ajax({
+				url: '@Url.Action("GetDistrictByProvinceId", "Districts")',
+				type: 'GET',
+				data: {
+					provinceId: $('#provinceId').val(),
+				},
+				success: function (data) {
+					$('#districtId').find('option').remove()
+					$('#districtId').append('<option value="">Select District </option>')
+					$(data).each(
+						function (index, item) {
+							$('#districtId').append('<option value="' + item.id + '">' + item.name + '</option>');
+						}
+					);
+				}
+			})
+		}
+		$("#districtId").change(function () {
+			getCommuneByDistrictId();
+		})
+		var getCommuneByDistrictId = function () {
+			$.ajax({
+				url: '@Url.Action("GetCommuneByDistrictId", "Communes")',
+				type: 'GET',
+				data: {
+					districtId: $('#districtId').val(),
+				},
+				success: function (data) {
+					$('#communeId').find('option').remove()
+					$('#communeId').append('<option value="">Select Commune </option>')
+					$(data).each(
+						function (index, item) {
+							$('#communeId').append('<option value="' + item.id + '">' + item.name + '</option>')
+						}
+					)
+				}
+			})
+		}
+
+
+	</script>
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}
+
+
+
+
