@@ -44,15 +44,15 @@ public class EmployeesService : IEmployeesService
         return true;
     }
 
-    public bool UpdateEmployee(Employee? employee)
+    public bool UpdateEmployee(int id, Employee? employee)
     {
         if (employee == null) return false;
         employee.Age = Employee.SetAge(employee.Dob);
-        if (CheckIdentityNumberDuplicate(employee, employee.Id)) return false;
+        if (CheckIdentityNumberDuplicate(employee, id)) return false;
 
         try
         {
-            _employeesRepo.Update(employee);
+            _employeesRepo.Update(id, employee);
         }
         catch (Exception)
         {

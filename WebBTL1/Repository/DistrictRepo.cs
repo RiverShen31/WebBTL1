@@ -37,7 +37,7 @@ namespace WebBTL1.Repository
 
         public District Find(int id)
         {
-            return _context.Districts.Include(d => d.Province).FirstOrDefault(x => x.Id == id);
+            return _context.Districts.Include(d => d.Province).FirstOrDefault(x => x.Id == id)!;
         }
 
         public List<District> GetDistrictList()
@@ -68,7 +68,7 @@ namespace WebBTL1.Repository
 
         public District GetDistrictById(int id)
         {
-            return _context.Districts.FirstOrDefault(m => m.Id == id);
+            return _context.Districts.FirstOrDefault(m => m.Id == id)!;
         }
 
         public int GetDistrictCount()

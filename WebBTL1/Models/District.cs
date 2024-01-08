@@ -16,7 +16,6 @@ namespace WebBTL1.Models
         [Required]
         [ForeignKey("ProvinceId")]
         public Province? Province { get; set; }
-
         public ICollection<Commune>? Communes { get; set; }
     }
 }

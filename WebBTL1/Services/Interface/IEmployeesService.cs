@@ -8,7 +8,7 @@ namespace WebBTL1.Services.Interface
     {
         bool AddEmployee(Employee? employee);
 
-        bool UpdateEmployee(Employee? employee);
+        bool UpdateEmployee(int id, Employee? employee);
 
         void DeleteEmployee(int id);
 

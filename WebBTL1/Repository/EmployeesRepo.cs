@@ -47,9 +47,9 @@ namespace WebBTL1.Repository
             _context.SaveChanges();
         }
 
-        public void Update(Employee? employee)
+        public void Update(int id, Employee? employee)
         {
-            var entity = _context.Employees.FirstOrDefault(x => employee != null && x != null && x.Id == employee.Id);
+            var entity = _context.Employees.FirstOrDefault(x => employee != null && x != null && x.Id == id);
             if (entity != null && employee != null)
             {
                 entity.Name = employee.Name;

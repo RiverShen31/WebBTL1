@@ -21,7 +21,7 @@ namespace WebBTL1.Repository.Interface
 
         void Remove(Employee? employee);
 
-        void Update(Employee? employee);
+        void Update(int id, Employee? employee);
 
         bool EmployeeExists(int id);
     }

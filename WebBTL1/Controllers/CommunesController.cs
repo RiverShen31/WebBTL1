@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebBTL1.Models;
-using WebBTL1.Pagination;
 using WebBTL1.Repository.Interface;
 using WebBTL1.Services.Interface;
-using WebBTL1.Services.Validation;
+using WebBTL1.Validators;
 
 namespace WebBTL1.Controllers
 {
@@ -59,11 +58,20 @@ namespace WebBTL1.Controllers
 		[ValidateAntiForgeryToken]
 		public IActionResult Create([Bind("Id,Name,Level,DistrictId")] Commune commune)
 		{
-			if (!ModelState.IsValid)
+			DropDownList();
+
+			var validator = new CommuneValidator();
+			var validationResult = validator.Validate(commune);
+
+			if (!validationResult.IsValid)
 			{
-				DropDownList();
+				foreach (var error in validationResult.Errors)
+				{
+					ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+				}
 				return View(commune);
 			}
+
 			_communeService.AddCommune(commune);
 			TempData["success"] = "Category created successfully";
 			return RedirectToAction(nameof(Index));
@@ -79,11 +87,20 @@ namespace WebBTL1.Controllers
 		[ValidateAntiForgeryToken]
 		public IActionResult Edit(int id, [Bind("Id,Name,Level,DistrictId")] Commune commune)
 		{
-			if (!ModelState.IsValid)
+			DropDownList();
+
+			var validator = new CommuneValidator();
+			var validationResult = validator.Validate(commune);
+
+			if (!validationResult.IsValid)
 			{
-				DropDownList();
+				foreach (var error in validationResult.Errors)
+				{
+					ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+				}
 				return View(commune);
 			}
+
 			_communeService.UpdateCommune(commune);
 			TempData["success"] = "Category updated successfully";
 			return RedirectToAction(nameof(Index));

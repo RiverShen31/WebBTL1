@@ -134,6 +134,8 @@
 	const phoneError = document.getElementById("phoneError");
 	const identityError = document.getElementById("identityError");
 
+	const submit = document.getElementById("submit");
+
 	noPhone.addEventListener('click', function () {
 		if (noPhone.checked) {
 			phone.style.display = "none";
@@ -153,6 +155,18 @@
 			identityError.style.display = "span";
 		}
 	});
+	
+	submit.addEventListener('click', function (event) {
+		if (!noIdentity.checked && identity.value.trim() === '') {
+			identityError.innerText = "Please enter the Identity Number or check 'No Identity'";
+			event.preventDefault();
+		}
+		if (!noPhone.checked && phone.value.trim() === '') {
+			phoneError.innerText = "Please enter the Phone Number or check 'No Phone'";
+			event.preventDefault();
+		}
+	});
+
 </script>
 
 @section Scripts {

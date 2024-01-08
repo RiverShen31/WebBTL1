@@ -33,7 +33,7 @@ namespace WebBTL1.Repository
 
         public Province Find(int id)
         {
-            return _context.Provinces.Find(id);
+            return _context.Provinces.Find(id)!;
         }
 
         public IEnumerable<Province> GetProvinceList()

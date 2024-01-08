@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebBTL1.Models;
-using WebBTL1.Pagination;
 using WebBTL1.Repository.Interface;
 using WebBTL1.Services.Interface;
-using WebBTL1.Services.Validation;
+using WebBTL1.Validators;
 
 namespace WebBTL1.Controllers
 {
@@ -48,12 +47,19 @@ namespace WebBTL1.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create([Bind("Id,Name,Level,ProvinceId")] District district)
         {
-            if (!ModelState.IsValid)
-            {
-				DropDownList();
+            DropDownList();
+			var validator = new DistrictValidator();
+			var validationResult = validator.Validate(district);
+
+			if (!validationResult.IsValid)
+			{
+				foreach (var error in validationResult.Errors)
+				{
+					ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+				}
 				return View(district);
-            }
-            _districtService.AddDistrict(district);
+			}
+			_districtService.AddDistrict(district);
             TempData["success"] = "Category created successfully";
             return RedirectToAction(nameof(Index));
             
@@ -70,8 +76,18 @@ namespace WebBTL1.Controllers
         public IActionResult Edit(int id, [Bind("Id,Name,Level,ProvinceId")] District district)
         {
             DropDownList();
-            if (!ModelState.IsValid) return View(district);
-            _districtService.UpdateDistrict(district);
+			var validator = new DistrictValidator();
+			var validationResult = validator.Validate(district);
+
+			if (!validationResult.IsValid)
+			{
+				foreach (var error in validationResult.Errors)
+				{
+					ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+				}
+				return View(district);
+			}
+			_districtService.UpdateDistrict(district);
             TempData["success"] = "Category updated successfully";
             return RedirectToAction(nameof(Index));
         }

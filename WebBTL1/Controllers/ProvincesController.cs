@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebBTL1.Models;
-using WebBTL1.Pagination;
 using WebBTL1.Repository.Interface;
 using WebBTL1.Services.Interface;
-using WebBTL1.Services.Validation;
+using WebBTL1.Validators;
 
 namespace WebBTL1.Controllers
 {
@@ -47,8 +46,20 @@ namespace WebBTL1.Controllers
         public IActionResult Create([Bind("Id,Name,Level")] Province province)
         {
             DropDownList();
-            if (!ModelState.IsValid) return View(province);
-            _provinceService.AddProvince(province);
+
+			var validator = new ProvinceValidator();
+			var validationResult = validator.Validate(province);
+
+			if (!validationResult.IsValid)
+			{
+				foreach (var error in validationResult.Errors)
+				{
+					ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+				}
+				return View(province);
+			}
+
+			_provinceService.AddProvince(province);
             TempData["success"] = "Category created successfully";
             return RedirectToAction(nameof(Index));
         }
@@ -64,8 +75,20 @@ namespace WebBTL1.Controllers
         public IActionResult Edit(int id, [Bind("Id,Name,Level")] Province province)
         {
             DropDownList();
-            if (!ModelState.IsValid) return View(province);
-            _provinceService.UpdateProvince(province);
+
+			var validator = new ProvinceValidator();
+			var validationResult = validator.Validate(province);
+
+			if (!validationResult.IsValid)
+			{
+				foreach (var error in validationResult.Errors)
+				{
+					ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+				}
+				return View(province);
+			}
+
+			_provinceService.UpdateProvince(province);
             TempData["success"] = "Category updated successfully";
             return RedirectToAction(nameof(Index));
 
