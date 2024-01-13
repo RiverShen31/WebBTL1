@@ -1,6 +1,11 @@
-﻿using NPOI.HSSF.UserModel;
+﻿using ClosedXML.Excel;
+using NPOI.HSSF.UserModel;
 using NPOI.SS.Format;
+using Org.BouncyCastle.Tls;
+using System.Text;
+using WebBTL1.Constant;
 using WebBTL1.Models;
+using WebBTL1.Services.Validation;
 
 namespace WebBTL1.Utils
 {
@@ -124,54 +129,209 @@ namespace WebBTL1.Utils
             return communes;
         }
 
-        public static List<Employee> GetEmployees(string filename)
+        public static Response ImportEmployee(XLWorkbook excelFile)
         {
-            List<Employee> employees = new List<Employee>();
-            using var fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
-            var workbook = new HSSFWorkbook(fs);
-            var sheet = workbook.GetSheetAt(0);
-            for (int i=1; i<=sheet.LastRowNum -1; i++)
+            var employees = new List<Employee>();
+            try
             {
-                var row = sheet.GetRow(i);
-                Employee employee = new Employee();
-                if (row != null)
+                var sheet = excelFile.Worksheet(1);
+                for (var i=1; i<= sheet.LastRowUsed()!.RowNumber(); i++)
                 {
-                    for (int j=0; j<row.LastCellNum; j++)
+                    var row = sheet.Row(i);
+                    Employee employee = new();
+                    StringBuilder errorMessage = new();
+
+                    GetEmployee(sheet, row, errorMessage, employee);
+
+                    if (!string.IsNullOrEmpty(errorMessage.ToString())) 
                     {
-                        var cell = row.GetCell(j);
-                        if (cell != null)
-                        {
-                            switch (j)
-                            {
-                                case 0:
-                                    employee.Name = cell.StringCellValue;
-                                    break;
-                                case 1:
-                                    employee.Dob = cell.DateCellValue;
-                                    break;
-                                case 2:
-                                    employee.Age = int.Parse(cell.StringCellValue); break;
-                                case 3:
-                                    employee.Ethnic = cell.StringCellValue; break;
-                                case 4:
-                                    employee.Job = cell.StringCellValue; break;
-                                case 5:
-                                    employee.IdentityNumber = cell.StringCellValue; break;
-                                case 6:
-                                    employee.PhoneNumber = cell.StringCellValue; break;
-                                case 7:
-                                    employee.Province = int.Parse(cell.StringCellValue); break;
-                                case 8:
-                                    employee.District = int.Parse(cell.StringCellValue); break;
-                                case 9:
-                                    employee.Description = cell.StringCellValue; break;
-                            }
-                        }
+                        return new Response(new ErrorMessage(errorMessage.ToString()));
                     }
+                    employees.Add(employee);
                 }
-                employees.Add(employee);
+            } catch (Exception e)
+            {
+                Console.WriteLine(e);
             }
-            return employees;
+
+            return new Response(employees);
+        }
+
+        private static void GetEmployee(IXLWorksheet sheet, IXLRow row, StringBuilder errorMessage,
+               Employee employee)
+        {
+            for (var column = 1; column <= row.CellCount(); column++)
+            {
+                switch (column)
+                {
+                    case 1:
+                        GetName(sheet, row.RowNumber(), column, errorMessage, employee);
+                        break;
+                    case 2:
+                        GetDateOfBirth(sheet, row.RowNumber(), column, errorMessage, employee);
+                        break;
+                    case 3:
+                        GetAge(sheet, row.RowNumber(), column, errorMessage, employee); break;
+                    case 4:
+                        GetEthnic(sheet, row.RowNumber(), column, errorMessage, employee);
+                        break;
+                    case 5:
+                        GetJob(sheet, row.RowNumber(), column, errorMessage, employee);
+                        break;
+                    case 6:
+                        GetIdentityNumber(sheet, row.RowNumber(), column, errorMessage, employee);
+                        break;
+                    case 7:
+                        GetPhoneNumber(sheet, row.RowNumber(), column, errorMessage, employee);
+                        break;
+                    case 8:
+                        GetProvince(sheet, row.RowNumber(), column, errorMessage, employee);
+                        break;
+                    case 9:
+                        GetDistrict(sheet, row.RowNumber(), column, errorMessage, employee);
+                        break;
+                    case 10:
+                        GetCommune(sheet, row.RowNumber(), column, errorMessage, employee);
+                        break;
+
+                }
+            }
+        }
+
+        private static void GetName(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage,
+            Employee employee)
+        {
+            if (!Validate.ValidateName(sheet.Cell(row, column).Value.ToString())) 
+            {
+                errorMessage.Append($"Name must contain only letter. Error in row {row}, column {column}.\n");
+            } else
+            {
+                employee.Name = sheet.Cell(row, column).Value.ToString();
+            }
+        }
+
+        private static void GetDateOfBirth(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage,
+        Employee employee)
+        {
+            var isValid = true;
+            var dateString = sheet.Cell(row, column).Value.ToString();
+            var formats = new string[] { "dd/MM/yyyy", "d/M/yyyy", "dd/M/yyyy", "d/MM/yyyy" };
+            var isCorrectFormat = DateTime.TryParseExact(dateString,
+                formats,
+                System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.None, out DateTime date);
+            if (!isCorrectFormat)
+            {
+                errorMessage.Append($"Birthday is not in d/M/yyyy format in row {row} column {column}.\n");
+                isValid = false;
+            }
+
+            if (!Validate.ValidateDob(date))
+            {
+                errorMessage.Append(
+                    $"Birthday must in the past and after 1/1/{Constant.Constant.MinYear}. Error in row {row}. column {column}.\n");
+                isValid = false;
+            }
+
+            if (isValid)
+            {
+                employee.Dob = date;
+            }
+        }
+
+        private static void GetAge(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage,
+            Employee employee)
+        {
+            var ageString = sheet.Cell(row, column).Value.ToString();
+
+            if (!int.TryParse(ageString, out int age))
+            {
+                errorMessage.Append($"Age is not a valid number in row {row}, column {column}.\n");
+                return;
+            }
+
+            employee.Age = age;
+        }
+
+        private static void GetEthnic(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage,
+            Employee employee)
+        {
+            employee.Ethnic = sheet.Cell(row, column).Value.ToString();
+        }
+
+        private static void GetJob(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage,
+            Employee employee)
+        {
+            employee.Job = sheet.Cell(row, column).Value.ToString();
+        }
+
+        private static void GetIdentityNumber(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage,
+            Employee employee)
+        {
+            var identityNumber = sheet.Cell(row, column).Value.ToString();
+            if (!string.IsNullOrEmpty(identityNumber) && identityNumber.Length != Constant.Constant.IdentityNumberLength)
+            {
+                errorMessage.Append(
+                $"Citizen Identity Card Number must contains {Constant.Constant.IdentityNumberLength} digits. Error in row {row}, column {column}.\n");
+            } else
+            {
+                employee.IdentityNumber = identityNumber;
+            }
+        }
+
+        private static void GetPhoneNumber(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage,
+            Employee employee)
+        {
+            var phoneNumber = sheet.Cell(row, column).Value.ToString();
+
+            if (!string.IsNullOrEmpty(phoneNumber) && phoneNumber.Length != Constant.Constant.PhoneNumberLength
+                    && !Validate.IsPhoneNumber(phoneNumber))
+            {
+                errorMessage.Append(
+                $"Phone Number must contains {Constant.Constant.PhoneNumberLength} digits. Error in row {row}, column {column}.\n");
+            } else
+            {
+                employee.PhoneNumber = phoneNumber;
+            }
+        }
+
+        private static void GetProvince(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage, Employee employee)
+        {
+            string provinceValue = sheet.Cell(row, column).Value.ToString();
+            if (int.TryParse(provinceValue, out int province))
+            {
+                employee.Province = province;
+            }
+            else
+            {
+                errorMessage.AppendLine($"Invalid value for Province at row {row}, column {column}");
+            }
+        }
+
+        private static void GetDistrict(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage, Employee employee)
+        {
+            string districtValue = sheet.Cell(row, column).Value.ToString();
+            if (int.TryParse(districtValue, out int district))
+            {
+                employee.District = district;
+            }
+            else
+            {
+                errorMessage.AppendLine($"Invalid value for District at row {row}, column {column}");
+            }
+        }
+
+        private static void GetCommune(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage, Employee employee)
+        {
+            string communeValue = sheet.Cell(row, column).Value.ToString();
+            if (int.TryParse(communeValue, out int commune))
+            {
+                employee.Commune = commune;
+            }
+            else
+            {
+                errorMessage.AppendLine($"Invalid value for Commune at row {row}, column {column}");
+            }
         }
     }
 }

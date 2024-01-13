@@ -45,37 +45,84 @@
             @Html.DisplayNameFor(model => model.IdentityNumber)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdentityNumber)
+            @if (string.IsNullOrEmpty(Model?.IdentityNumber))
+            {
+                <text>None</text>
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.IdentityNumber)
+
+            }
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.PhoneNumber)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PhoneNumber)
+            @if (string.IsNullOrEmpty(Model?.PhoneNumber))
+            {
+                <text>None</text>
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.PhoneNumber)
+
+            }
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Province)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Province)
+            @if (string.IsNullOrEmpty(Model?.Province))
+            {
+                <text>Process</text>
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.Province)
+            }
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.District)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.District)
+            @if (string.IsNullOrEmpty(Model?.District))
+            {
+                <text>Process</text>
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.District)
+
+            }
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Commune)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Commune)
+            @if (string.IsNullOrEmpty(Model?.Commune))
+            {
+                <text>Process</text>
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.Commune)
+
+            }
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Description)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
+            @if (string.IsNullOrEmpty(Model?.Description))
+            {
+                <text>None</text>
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.Description)
+
+            }
         </dd>
     </dl>
     

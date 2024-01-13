@@ -5,6 +5,9 @@ using WebBTL1.Repository.Interface;
 using WebBTL1.Services.Interface;
 using WebBTL1.Validators;
 using System.Configuration;
+using Microsoft.AspNetCore.Hosting;
+using ClosedXML.Excel;
+using WebBTL1.Utils;
 
 namespace WebBTL1.Controllers
 {
@@ -122,6 +125,41 @@ namespace WebBTL1.Controllers
         {
             _employeeService.DeleteEmployee(id);
             TempData["success"] = "Category deleted successfully";
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        public IActionResult Import(IFormFile file)
+        {
+            if (file is { Length: > 0})
+            {
+                var memoryStream = new MemoryStream();
+                file.CopyTo(memoryStream);
+                try
+                {
+                    var workbook = new XLWorkbook(memoryStream);
+
+                    var response = ExcelFileManipulation.ImportEmployee(workbook);
+
+                    if (response.ErrorMessage != null || response.Employee.Count < 1)
+                    {
+                        TempData["error"] = $"Employee imported fail from {file.FileName}: \n" + response.ErrorMessage?.Content;
+                        return RedirectToAction(nameof(Index));
+                    }
+                    foreach (var employee in response.Employee) 
+                    {
+                        _employeeService.AddEmployee(employee);
+                    }
+                    TempData["success"] = "Employee imported successfully from " + file.FileName;
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception)
+                {
+                    TempData["error"] = "Please choose other type of file";
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            TempData["error"] = "Please choose other type of file";
             return RedirectToAction(nameof(Index));
         }
 

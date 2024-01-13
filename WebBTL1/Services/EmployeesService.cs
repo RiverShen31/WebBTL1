@@ -98,7 +98,7 @@ public class EmployeesService : IEmployeesService
     }
 
 
-	private bool CheckIdentityNumberDuplicate(Employee? employee, int id)
+	public bool CheckIdentityNumberDuplicate(Employee? employee, int id)
     {
         if (employee?.IdentityNumber != null)
         {
