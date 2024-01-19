@@ -5,9 +5,19 @@
 @{
     ViewData["Title"] = "Index";
 }
-<a asp-action="Create" class="btn btn-primary">Create New
-    @*<a >Create New</a>*@
-</a>
+
+<div class="row">
+    <div class="col-md-9">
+        <a asp-action="Create" class="btn btn-primary">Create New</a>
+    </div>
+    <div class="col-md-3">
+        <form asp-controller="Employees" asp-action="Import" method="post" enctype="multipart/form-data" class="d-flex">
+            <input type="file" name="file" class="form-control-file" />
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </form>
+    </div>
+</div>
+    
 
 <table class="table">
     <thead>
@@ -105,6 +115,11 @@
         }
     </tbody>
 </table>
+
+<div>
+    <!-- Export Excel button -->
+    <a class="btn btn-primary" asp-controller="Employees" asp-action="ExportEmployeeToExcel">Download Excel</a>
+</div>
 <br />
 
 @{
@@ -119,15 +134,4 @@
 </a>
 <br />
 
-<div>
-    <!-- Import Excel button -->
-    <form asp-controller="Employees" asp-action="Import" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" />
-        <button type="submit">Import Excel</button>
-    </form>
 
-    <!-- Export Excel button -->
-    <form asp-controller="Employees" asp-action="Export" method="post">
-        <button type="submit">Export Excel</button>
-    </form>
-</div>

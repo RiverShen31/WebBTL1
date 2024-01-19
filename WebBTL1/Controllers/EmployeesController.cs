@@ -8,6 +8,9 @@ using System.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using ClosedXML.Excel;
 using WebBTL1.Utils;
+using System.Data;
+using Humanizer;
+using WebBTL1.ViewModels;
 
 namespace WebBTL1.Controllers
 {
@@ -161,6 +164,51 @@ namespace WebBTL1.Controllers
             }
             TempData["error"] = "Please choose other type of file";
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public FileResult ExportEmployeeToExcel()
+        {
+            return GenerateExcel(Constant.Constant.FileNameEmployee, 
+                _employeeService.SetEmployeeViewModelList(_employeeRepo.GetEmployeesList()));
+        }
+
+        public FileResult GenerateExcel(string fileName, IEnumerable<EmployeeViewModel> employees)
+        {
+            DataTable dataTable = new DataTable("Employees");
+            dataTable.Columns.AddRange(new DataColumn[]
+            {
+                new DataColumn("Id"),
+                new DataColumn("Name"),
+                new DataColumn("Dob"),
+                new DataColumn("Age"),
+                new DataColumn("Ethnic"),
+                new DataColumn("Job"),
+                new DataColumn("IdentityNumber"),
+                new DataColumn("PhoneNumber"),
+                new DataColumn("Province"),
+                new DataColumn("District"),
+                new DataColumn("Commune"),
+                new DataColumn("Description")
+            });
+
+            foreach (var person in employees)
+            {
+                dataTable.Rows.Add(person.Id, person.Name, person.Dob, person.Age, person.Ethnic,
+                    person.Job, person.IdentityNumber, person.PhoneNumber, person.Province,
+                    person.District, person.Commune, person.Description);
+            }
+
+            using (XLWorkbook wb = new XLWorkbook())
+            {
+                wb.Worksheets.Add(dataTable);
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    wb.SaveAs(stream);
+                    return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        fileName);
+                }
+            }
         }
 
         public void DropDownList()

@@ -9,5 +9,7 @@
         public const int MinYear = 1950;
         public const int PageSize = 10;
         public const int PageDefault = 1;
+
+        public const string FileNameEmployee = "Employee.xlxx";
     }
 }

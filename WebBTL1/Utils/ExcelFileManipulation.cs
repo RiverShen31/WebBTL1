@@ -2,10 +2,15 @@
 using NPOI.HSSF.UserModel;
 using NPOI.SS.Format;
 using Org.BouncyCastle.Tls;
+using System.Data;
 using System.Text;
+using System.Web.Mvc;
 using WebBTL1.Constant;
 using WebBTL1.Models;
 using WebBTL1.Services.Validation;
+using WebBTL1.ViewModels;
+using System.IO;
+using Microsoft.AspNetCore.Mvc;
 
 namespace WebBTL1.Utils
 {
@@ -129,7 +134,44 @@ namespace WebBTL1.Utils
             return communes;
         }
 
-        public static Response ImportEmployee(XLWorkbook excelFile)
+        /*public static FileResult GenerateExcel(string fileName, IEnumerable<EmployeeViewModel> employees)
+        {
+            DataTable dataTable = new DataTable("Employees");
+            dataTable.Columns.AddRange(new DataColumn[]
+            {
+                new DataColumn("Id"),
+                new DataColumn("Name"),
+                new DataColumn("Dob"),
+                new DataColumn("Age"),
+                new DataColumn("Ethnic"),
+                new DataColumn("Job"),
+                new DataColumn("IdentityNumber"),
+                new DataColumn("PhoneNumber"),
+                new DataColumn("Province"),
+                new DataColumn("District"),
+                new DataColumn("Commune"),
+                new DataColumn("Description")
+            });
+
+            foreach (var person in employees)
+            {
+                dataTable.Rows.Add(person.Id, person.Name, person.Dob, person.Age, person.Ethnic,
+                    person.Job, person.IdentityNumber, person.PhoneNumber, person.Province,
+                    person.District, person.Commune, person.Description);
+            }
+
+            using (XLWorkbook wb = new XLWorkbook())
+            {
+                wb.Worksheets.Add(dataTable);
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    wb.SaveAs(stream);
+                    return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        fileName);
+                }
+            }*/
+
+            public static Response ImportEmployee(XLWorkbook excelFile)
         {
             var employees = new List<Employee>();
             try
