@@ -1,11 +1,8 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
 using NPOI.HSSF.UserModel;
-using NPOI.SS.UserModel;
 using System.Text;
 using WebBTL1.Models;
 using WebBTL1.Services.Validation;
-using CellType = NPOI.SS.UserModel.CellType;
 
 namespace WebBTL1.Utils
 {

@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using System.Text.RegularExpressions;
-using WebBTL1.Constant;
 using WebBTL1.Models;
 
 namespace WebBTL1.Validators

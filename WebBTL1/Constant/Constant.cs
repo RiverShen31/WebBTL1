@@ -1,6 +1,6 @@
 ﻿namespace WebBTL1.Constant
 {
-    public class Constant
+    public abstract class Constant
     {
         public const int MaxLengthName = 100;
         public const int MinLengthName = 3;
