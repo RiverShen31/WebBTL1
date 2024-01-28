@@ -99,7 +99,8 @@ public class EmployeesService : IEmployeesService
 
     private bool CheckIdentityNumberDuplicate(Employee? employee, int id)
     {
-        if (employee?.IdentityNumber != null)
+        if (!string.IsNullOrWhiteSpace(employee?.IdentityNumber))
+        /*if (employee?.IdentityNumber != null)*/
         {
             return _employeesRepo.GetEmployeesList()
                     .Exists(e => e!.IdentityNumber == employee.IdentityNumber && e.Id != id);

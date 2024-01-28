@@ -150,11 +150,22 @@ namespace WebBTL1.Controllers
                         return RedirectToAction(nameof(Index));
                     }
 
-                    if (response.Employee.Any(employee => !_employeeService.AddEmployee(employee)))
+                    var count = 0;
+                    foreach (var employee in response.Employee)
+                    {
+                        count++;
+                        if (!_employeeService.AddEmployee(employee))
+                        {
+                            TempData["error"] = $"Identity number exist in line {count+1}";
+                            return RedirectToAction(nameof(Index));
+                        }
+                    }
+
+                    /*if (response.Employee.Any(employee => !_employeeService.AddEmployee(employee)))
                     {
                         TempData["error"] = "Identity number exists!";
                         return RedirectToAction(nameof(Index));
-                    }
+                    }*/
 
                     TempData["success"] = "Employee imported successfully from " + file.FileName;
                     return RedirectToAction(nameof(Index));
