@@ -4,12 +4,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using WebBTL1.Repository.Interface;
 using WebBTL1.Services.Interface;
 using WebBTL1.Validators;
-using System.Configuration;
-using Microsoft.AspNetCore.Hosting;
 using ClosedXML.Excel;
 using WebBTL1.Utils;
 using System.Data;
-using Humanizer;
 using WebBTL1.ViewModels;
 
 namespace WebBTL1.Controllers
@@ -141,18 +138,24 @@ namespace WebBTL1.Controllers
                 try
                 {
                     var workbook = new XLWorkbook(memoryStream);
+                    var provinceList = _employeeRepo.GetProvinceList();
+                    var districtList = _employeeRepo.GetDistrictList();
+                    var communeList = _employeeRepo.GetCommuneList();
 
-                    var response = ExcelFileManipulation.ImportEmployee(workbook);
+                    var response = ExcelFileManipulation.ImportEmployee(workbook, provinceList, districtList, communeList);
 
                     if (response.ErrorMessage != null || response.Employee.Count < 1)
                     {
                         TempData["error"] = $"Employee imported fail from {file.FileName}: \n" + response.ErrorMessage?.Content;
                         return RedirectToAction(nameof(Index));
                     }
-                    foreach (var employee in response.Employee) 
+
+                    if (response.Employee.Any(employee => !_employeeService.AddEmployee(employee)))
                     {
-                        _employeeService.AddEmployee(employee);
+                        TempData["error"] = "Identity number exists!";
+                        return RedirectToAction(nameof(Index));
                     }
+
                     TempData["success"] = "Employee imported successfully from " + file.FileName;
                     return RedirectToAction(nameof(Index));
                 }
@@ -176,7 +179,7 @@ namespace WebBTL1.Controllers
         public FileResult GenerateExcel(string fileName, IEnumerable<EmployeeViewModel> employees)
         {
             DataTable dataTable = new DataTable("Employees");
-            dataTable.Columns.AddRange(new DataColumn[]
+            dataTable.Columns.AddRange(new[]
             {
                 new DataColumn("Id"),
                 new DataColumn("Name"),
@@ -199,23 +202,18 @@ namespace WebBTL1.Controllers
                     person.District, person.Commune, person.Description);
             }
 
-            using (XLWorkbook wb = new XLWorkbook())
-            {
-                wb.Worksheets.Add(dataTable);
-                using (MemoryStream stream = new MemoryStream())
-                {
-                    wb.SaveAs(stream);
-                    return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        fileName);
-                }
-            }
+            using var wb = new XLWorkbook();
+            wb.Worksheets.Add(dataTable);
+            using var stream = new MemoryStream();
+            wb.SaveAs(stream);
+            return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileName);
         }
 
         public void DropDownList()
         {
             ViewBag.EthnicList = new SelectList(_employeeRepo.GetEthnic(), "EthnicName", "EthnicName");
             ViewBag.JobList = new SelectList(_employeeRepo.GetJob(), "JobTitle", "JobTitle");
-            /*ViewBag.ProvinceList = new SelectList(_provinceRepo.GetProvinceList(), "Id", "Name");*/
         }
     }
 }

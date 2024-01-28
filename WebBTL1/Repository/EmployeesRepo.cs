@@ -24,6 +24,21 @@ namespace WebBTL1.Repository
             return _context.Jobs;
         }
 
+        public List<Province> GetProvinceList()
+        {
+            return _context.Provinces.ToList();
+        }
+
+        public List<District> GetDistrictList()
+        {
+            return _context.Districts.ToList();
+        }
+
+        public List<Commune> GetCommuneList()
+        {
+            return _context.Communes.ToList();
+        }
+
         public Employee? GetEmployeeById(int id)
         {
             return _context.Employees.FirstOrDefault(m => m != null && m.Id == id);

@@ -10,6 +10,6 @@
         public const int PageSize = 10;
         public const int PageDefault = 1;
 
-        public const string FileNameEmployee = "Employee.xlxx";
+        public const string FileNameEmployee = "Employee.xlsx";
     }
 }

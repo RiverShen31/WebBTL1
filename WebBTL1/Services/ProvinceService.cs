@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using WebBTL1.Models;
+﻿using WebBTL1.Models;
 using WebBTL1.Pagination;
 using WebBTL1.Repository.Interface;
 using WebBTL1.Services.Interface;
@@ -28,7 +27,7 @@ namespace WebBTL1.Services
         public void DeleteProvince(int id)
         {
             var province = _provinceRepo.GetProvinceById(id);
-            _provinceRepo.Remove(province);
+            _provinceRepo.Remove(province!);
         }
 
         public PaginatedList<Province> PaginatedProvince(int? pageNumber)

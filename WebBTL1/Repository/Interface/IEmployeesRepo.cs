@@ -9,6 +9,12 @@ namespace WebBTL1.Repository.Interface
 
         DbSet<Job> GetJob();
 
+        List<Province> GetProvinceList();
+
+        List<District> GetDistrictList();
+
+        List<Commune> GetCommuneList();
+
         Employee? GetEmployeeById(int id);
 
         List<Employee?> GetEmployeesList();
@@ -22,7 +28,5 @@ namespace WebBTL1.Repository.Interface
         void Remove(Employee? employee);
 
         void Update(int id, Employee? employee);
-
-        bool EmployeeExists(int id);
     }
 }

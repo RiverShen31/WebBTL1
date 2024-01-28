@@ -52,9 +52,9 @@ namespace WebBTL1.Repository
             return _context.Provinces.Where(u => u.Id == provinceId).Select(x => x.Name).FirstOrDefault();
         }
 
-        public Province? GetProvinceById(int id)
+        public Province? GetProvinceById(int provinceId)
         {
-            return _context.Provinces.FirstOrDefault(m => m.Id == id);
+            return _context.Provinces.FirstOrDefault(m => m.Id == provinceId);
         }
 
         public int GetProvinceCount()

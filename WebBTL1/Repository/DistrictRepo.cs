@@ -66,9 +66,9 @@ namespace WebBTL1.Repository
             return _context.Districts.Where(u => u.ProvinceId == provinceId).ToList();
         }
 
-        public District GetDistrictById(int id)
+        public District GetDistrictById(int districtId)
         {
-            return _context.Districts.FirstOrDefault(m => m.Id == id)!;
+            return _context.Districts.FirstOrDefault(m => m.Id == districtId)!;
         }
 
         public int GetDistrictCount()

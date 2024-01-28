@@ -36,7 +36,7 @@ namespace WebBTL1.Repository
         public Commune Find(int id)
         {
             return _context.Communes.Include(d => d.District)
-                        .FirstOrDefault(x => x.Id == id);
+                .FirstOrDefault(x => x.Id == id)!;
         }
 
         public List<Commune> GetCommuneList()

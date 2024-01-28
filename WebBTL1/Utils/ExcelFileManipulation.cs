@@ -1,20 +1,15 @@
 ﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using NPOI.HSSF.UserModel;
-using NPOI.SS.Format;
-using Org.BouncyCastle.Tls;
-using System.Data;
+using NPOI.SS.UserModel;
 using System.Text;
-using System.Web.Mvc;
-using WebBTL1.Constant;
 using WebBTL1.Models;
 using WebBTL1.Services.Validation;
-using WebBTL1.ViewModels;
-using System.IO;
-using Microsoft.AspNetCore.Mvc;
+using CellType = NPOI.SS.UserModel.CellType;
 
 namespace WebBTL1.Utils
 {
-    public class ExcelFileManipulation
+    public abstract class ExcelFileManipulation
     {
         public static List<Province> GetProvinces(string fileName)
         {
@@ -22,13 +17,13 @@ namespace WebBTL1.Utils
             using var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
             var workBook = new HSSFWorkbook(fs);
             var sheet = workBook.GetSheetAt(0);
-            for (int i=1; i<=sheet.LastRowNum-1; i++)
+            for (int i = 1; i <= sheet.LastRowNum - 1; i++)
             {
                 var row = sheet.GetRow(i);
                 Province province = new();
                 if (row != null)
                 {
-                    for (int j=0; j<row.LastCellNum; j++)
+                    for (int j = 0; j < row.LastCellNum; j++)
                     {
                         var cell = row.GetCell(j);
                         if (cell != null)
@@ -134,56 +129,20 @@ namespace WebBTL1.Utils
             return communes;
         }
 
-        /*public static FileResult GenerateExcel(string fileName, IEnumerable<EmployeeViewModel> employees)
-        {
-            DataTable dataTable = new DataTable("Employees");
-            dataTable.Columns.AddRange(new DataColumn[]
-            {
-                new DataColumn("Id"),
-                new DataColumn("Name"),
-                new DataColumn("Dob"),
-                new DataColumn("Age"),
-                new DataColumn("Ethnic"),
-                new DataColumn("Job"),
-                new DataColumn("IdentityNumber"),
-                new DataColumn("PhoneNumber"),
-                new DataColumn("Province"),
-                new DataColumn("District"),
-                new DataColumn("Commune"),
-                new DataColumn("Description")
-            });
-
-            foreach (var person in employees)
-            {
-                dataTable.Rows.Add(person.Id, person.Name, person.Dob, person.Age, person.Ethnic,
-                    person.Job, person.IdentityNumber, person.PhoneNumber, person.Province,
-                    person.District, person.Commune, person.Description);
-            }
-
-            using (XLWorkbook wb = new XLWorkbook())
-            {
-                wb.Worksheets.Add(dataTable);
-                using (MemoryStream stream = new MemoryStream())
-                {
-                    wb.SaveAs(stream);
-                    return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        fileName);
-                }
-            }*/
-
-            public static Response ImportEmployee(XLWorkbook excelFile)
+        public static Response ImportEmployee(XLWorkbook excelFile, List<Province> provinces, List<District> districts, List<Commune> communes)
         {
             var employees = new List<Employee>();
             try
             {
                 var sheet = excelFile.Worksheet(1);
-                for (var i=1; i<= sheet.LastRowUsed()!.RowNumber(); i++)
+                var startRow = 2; // Row Start data
+                for (var i=startRow; i<= sheet.LastRowUsed()!.RowNumber(); i++)
                 {
                     var row = sheet.Row(i);
                     Employee employee = new();
                     StringBuilder errorMessage = new();
 
-                    GetEmployee(sheet, row, errorMessage, employee);
+                    GetEmployee(sheet, row, errorMessage, employee, provinces, districts, communes);
 
                     if (!string.IsNullOrEmpty(errorMessage.ToString())) 
                     {
@@ -200,180 +159,136 @@ namespace WebBTL1.Utils
         }
 
         private static void GetEmployee(IXLWorksheet sheet, IXLRow row, StringBuilder errorMessage,
-               Employee employee)
+               Employee employee, IEnumerable<Province> provinces, IEnumerable<District> districts, IEnumerable<Commune> communes)
         {
-            for (var column = 1; column <= row.CellCount(); column++)
-            {
-                switch (column)
-                {
-                    case 1:
-                        GetName(sheet, row.RowNumber(), column, errorMessage, employee);
-                        break;
-                    case 2:
-                        GetDateOfBirth(sheet, row.RowNumber(), column, errorMessage, employee);
-                        break;
-                    case 3:
-                        GetAge(sheet, row.RowNumber(), column, errorMessage, employee); break;
-                    case 4:
-                        GetEthnic(sheet, row.RowNumber(), column, errorMessage, employee);
-                        break;
-                    case 5:
-                        GetJob(sheet, row.RowNumber(), column, errorMessage, employee);
-                        break;
-                    case 6:
-                        GetIdentityNumber(sheet, row.RowNumber(), column, errorMessage, employee);
-                        break;
-                    case 7:
-                        GetPhoneNumber(sheet, row.RowNumber(), column, errorMessage, employee);
-                        break;
-                    case 8:
-                        GetProvince(sheet, row.RowNumber(), column, errorMessage, employee);
-                        break;
-                    case 9:
-                        GetDistrict(sheet, row.RowNumber(), column, errorMessage, employee);
-                        break;
-                    case 10:
-                        GetCommune(sheet, row.RowNumber(), column, errorMessage, employee);
-                        break;
+            employee.Name = GetName(sheet, row.RowNumber(), 1, errorMessage);
+            employee.Dob = GetDateOfBirth(sheet, row.RowNumber(), 2, errorMessage);
+            employee.Age = GetAge(sheet, row.RowNumber(), 3, errorMessage);
+            employee.Ethnic = GetEthnic(sheet, row.RowNumber(), 4);
+            employee.Job = GetJob(sheet, row.RowNumber(), 5);
+            employee.IdentityNumber = GetIdentityNumber(sheet, row.RowNumber(), 6, errorMessage);
+            employee.PhoneNumber = GetPhoneNumber(sheet, row.RowNumber(), 7, errorMessage);
 
-                }
-            }
+            var province = GetProvince(sheet, row.RowNumber(), 8, errorMessage, provinces);
+            var district = GetDistrict(sheet, row.RowNumber(), 9, errorMessage, districts, province);
+            var commune = GetCommune(sheet, row.RowNumber(), 10, errorMessage, communes, district);
+            
+
+            employee.Province = province;
+            employee.District = district;
+            employee.Commune = commune;
         }
 
-        private static void GetName(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage,
-            Employee employee)
+        private static string GetName(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage)
         {
-            if (!Validate.ValidateName(sheet.Cell(row, column).Value.ToString())) 
-            {
-                errorMessage.Append($"Name must contain only letter. Error in row {row}, column {column}.\n");
-            } else
-            {
-                employee.Name = sheet.Cell(row, column).Value.ToString();
-            }
+            var nameStr = ExcelHelper.GetValue(sheet, row, column);
+            if (Validate.ValidateName(nameStr)) return nameStr;
+            errorMessage.Append($"Name must contain only letter. Error in row {row}, column {column}.\n");
+            return string.Empty;
         }
 
-        private static void GetDateOfBirth(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage,
-        Employee employee)
+        private static DateTime GetDateOfBirth(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage)
         {
-            var isValid = true;
-            var dateString = sheet.Cell(row, column).Value.ToString();
-            var formats = new string[] { "dd/MM/yyyy", "d/M/yyyy", "dd/M/yyyy", "d/MM/yyyy" };
+            var dateString = ExcelHelper.GetValue(sheet, row, column);
+            var formats = new[] { "dd/MM/yyyy", "d/M/yyyy", "dd/M/yyyy", "d/MM/yyyy" };
             var isCorrectFormat = DateTime.TryParseExact(dateString,
                 formats,
                 System.Globalization.CultureInfo.InvariantCulture,
-                System.Globalization.DateTimeStyles.None, out DateTime date);
+                System.Globalization.DateTimeStyles.None, out var date);
             if (!isCorrectFormat)
             {
                 errorMessage.Append($"Birthday is not in d/M/yyyy format in row {row} column {column}.\n");
-                isValid = false;
+                return DateTime.Now;
             }
 
-            if (!Validate.ValidateDob(date))
-            {
-                errorMessage.Append(
-                    $"Birthday must in the past and after 1/1/{Constant.Constant.MinYear}. Error in row {row}. column {column}.\n");
-                isValid = false;
-            }
+            if (Validate.ValidateDob(date)) return date;
+            errorMessage.Append(
+                $"Birthday must in the past and after 1/1/{Constant.Constant.MinYear}. Error in row {row}. column {column}.\n");
+            return DateTime.Now;
 
-            if (isValid)
-            {
-                employee.Dob = date;
-            }
         }
 
-        private static void GetAge(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage,
-            Employee employee)
+        private static int GetAge(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage)
         {
-            var ageString = sheet.Cell(row, column).Value.ToString();
+            var ageString = ExcelHelper.GetValue(sheet, row, column);
 
-            if (!int.TryParse(ageString, out int age))
-            {
-                errorMessage.Append($"Age is not a valid number in row {row}, column {column}.\n");
-                return;
-            }
+            if (int.TryParse(ageString, out var age)) return age;
+            errorMessage.Append($"Age is not a valid number in row {row}, column {column}.\n");
+            return int.MinValue;
 
-            employee.Age = age;
         }
 
-        private static void GetEthnic(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage,
-            Employee employee)
+        private static string GetEthnic(IXLWorksheet sheet, int row, int column)
         {
-            employee.Ethnic = sheet.Cell(row, column).Value.ToString();
+            return ExcelHelper.GetValue(sheet, row, column);
         }
 
-        private static void GetJob(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage,
-            Employee employee)
+        private static string GetJob(IXLWorksheet sheet, int row, int column)
         {
-            employee.Job = sheet.Cell(row, column).Value.ToString();
+            return ExcelHelper.GetValue(sheet, row, column);
         }
 
-        private static void GetIdentityNumber(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage,
-            Employee employee)
+        private static string GetIdentityNumber(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage)
         {
-            var identityNumber = sheet.Cell(row, column).Value.ToString();
-            if (!string.IsNullOrEmpty(identityNumber) && identityNumber.Length != Constant.Constant.IdentityNumberLength)
-            {
-                errorMessage.Append(
+            var identityNumber = ExcelHelper.GetValue(sheet, row, column);
+            if (string.IsNullOrEmpty(identityNumber) || identityNumber.Length == Constant.Constant.IdentityNumberLength)
+                return identityNumber;
+            errorMessage.Append(
                 $"Citizen Identity Card Number must contains {Constant.Constant.IdentityNumberLength} digits. Error in row {row}, column {column}.\n");
-            } else
-            {
-                employee.IdentityNumber = identityNumber;
-            }
+            return string.Empty;
+
         }
 
-        private static void GetPhoneNumber(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage,
-            Employee employee)
+        private static string GetPhoneNumber(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage)
         {
-            var phoneNumber = sheet.Cell(row, column).Value.ToString();
+            var phoneNumber = ExcelHelper.GetValue(sheet, row, column);
 
-            if (!string.IsNullOrEmpty(phoneNumber) && phoneNumber.Length != Constant.Constant.PhoneNumberLength
-                    && !Validate.IsPhoneNumber(phoneNumber))
-            {
-                errorMessage.Append(
+            if (string.IsNullOrEmpty(phoneNumber) 
+                || phoneNumber.Length == Constant.Constant.PhoneNumberLength
+                || Validate.IsPhoneNumber(phoneNumber)) 
+                return phoneNumber;
+            errorMessage.Append(
                 $"Phone Number must contains {Constant.Constant.PhoneNumberLength} digits. Error in row {row}, column {column}.\n");
-            } else
-            {
-                employee.PhoneNumber = phoneNumber;
-            }
+            return string.Empty;
+
         }
 
-        private static void GetProvince(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage, Employee employee)
+        private static int GetProvince(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage, IEnumerable<Province> provinces)
         {
-            string provinceValue = sheet.Cell(row, column).Value.ToString();
-            if (int.TryParse(provinceValue, out int province))
+            var provinceValue = ExcelHelper.GetValue(sheet, row, column);
+            var matchingProvince = provinces.FirstOrDefault(p => p.Name == provinceValue);
+
+            if (matchingProvince != null)
             {
-                employee.Province = province;
+                return matchingProvince.Id;
             }
-            else
-            {
-                errorMessage.AppendLine($"Invalid value for Province at row {row}, column {column}");
-            }
+
+            errorMessage.AppendLine($"Invalid value for Province at row {row}, column {column}");
+            return 0; // Or any other appropriate default value
         }
 
-        private static void GetDistrict(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage, Employee employee)
+        private static int GetDistrict(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage, IEnumerable<District> districts, int provinceId)
         {
-            string districtValue = sheet.Cell(row, column).Value.ToString();
-            if (int.TryParse(districtValue, out int district))
+            var districtValue = ExcelHelper.GetValue(sheet, row, column);
+            var matchingDistrict = districts.FirstOrDefault(p => p.Name == districtValue && p.ProvinceId == provinceId);
+            if (matchingDistrict != null)
             {
-                employee.District = district;
+                return matchingDistrict.Id;
             }
-            else
-            {
-                errorMessage.AppendLine($"Invalid value for District at row {row}, column {column}");
-            }
+            errorMessage.AppendLine($"Invalid value for District at row {row}, column {column}");
+            return 0;
         }
 
-        private static void GetCommune(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage, Employee employee)
+        private static int GetCommune(IXLWorksheet sheet, int row, int column, StringBuilder errorMessage, IEnumerable<Commune> communes, int districtId)
         {
-            string communeValue = sheet.Cell(row, column).Value.ToString();
-            if (int.TryParse(communeValue, out int commune))
+            var communeValue = ExcelHelper.GetValue(sheet, row, column);
+            var matchingCommune = communes.FirstOrDefault(p => p.Name == communeValue && p.DistrictId == districtId);
+            if (matchingCommune != null)
             {
-                employee.Commune = commune;
+                return matchingCommune.Id;
             }
-            else
-            {
-                errorMessage.AppendLine($"Invalid value for Commune at row {row}, column {column}");
-            }
+            errorMessage.AppendLine($"Invalid value for Commune at row {row}, column {column}");
+            return 0;
         }
     }
 }

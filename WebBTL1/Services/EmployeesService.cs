@@ -1,6 +1,5 @@
 ﻿using WebBTL1.Models;
 using WebBTL1.Pagination;
-using WebBTL1.Repository;
 using WebBTL1.Repository.Interface;
 using WebBTL1.Services.Interface;
 using WebBTL1.Services.Validation;
@@ -98,7 +97,7 @@ public class EmployeesService : IEmployeesService
     }
 
 
-	public bool CheckIdentityNumberDuplicate(Employee? employee, int id)
+    private bool CheckIdentityNumberDuplicate(Employee? employee, int id)
     {
         if (employee?.IdentityNumber != null)
         {
