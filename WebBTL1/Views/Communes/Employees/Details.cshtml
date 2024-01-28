@@ -44,7 +44,7 @@
             @Html.DisplayNameFor(model => model.IdentityNumber)
         </dt>
         <dd class = "col-sm-10">
-            @if (string.IsNullOrEmpty(Model?.IdentityNumber))
+            @if (string.IsNullOrEmpty(Model.IdentityNumber))
             {
                 <text>None</text>
             } else
@@ -57,7 +57,7 @@
             @Html.DisplayNameFor(model => model.PhoneNumber)
         </dt>
         <dd class = "col-sm-10">
-            @if (string.IsNullOrEmpty(Model?.PhoneNumber))
+            @if (string.IsNullOrEmpty(Model.PhoneNumber))
             {
                 <text>None</text>
             } else
@@ -70,7 +70,7 @@
             @Html.DisplayNameFor(model => model.Province)
         </dt>
         <dd class = "col-sm-10">
-            @if (string.IsNullOrEmpty(Model?.Province))
+            @if (string.IsNullOrEmpty(Model.Province))
             {
                 <text>Process</text>
             } else
@@ -82,7 +82,7 @@
             @Html.DisplayNameFor(model => model.District)
         </dt>
         <dd class = "col-sm-10">
-            @if (string.IsNullOrEmpty(Model?.District))
+            @if (string.IsNullOrEmpty(Model.District))
             {
                 <text>Process</text>
             } else
@@ -95,7 +95,7 @@
             @Html.DisplayNameFor(model => model.Commune)
         </dt>
         <dd class = "col-sm-10">
-            @if (string.IsNullOrEmpty(Model?.Commune))
+            @if (string.IsNullOrEmpty(Model.Commune))
             {
                 <text>Process</text>
             } else
@@ -108,7 +108,7 @@
             @Html.DisplayNameFor(model => model.Description)
         </dt>
         <dd class = "col-sm-10">
-            @if (string.IsNullOrEmpty(Model?.Description))
+            @if (string.IsNullOrEmpty(Model.Description))
             {
                 <text>None</text>
             } else
@@ -120,6 +120,6 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>

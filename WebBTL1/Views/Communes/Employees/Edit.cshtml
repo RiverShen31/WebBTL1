@@ -22,7 +22,7 @@
 			<div class="col-sm">
 				<div class="form-group">
                 <label asp-for="Dob" class="control-label"></label>
-                <input asp-for="Dob" type="datetime" class="form-control" 
+                <input asp-for="Dob" type="date" class="form-control" 
                             value="@Model.Dob.ToString("MM/dd/yyyy")"
                             placeholder="mm/dd/yyyy"/>
                 <span asp-validation-for="Dob" class="text-danger"></span>
@@ -169,7 +169,7 @@
 				const districtIdValue = @Model.District;
 				const communeIdValue = @Model.Commune;
 
-			if (provinceIdValue != null && provinceIdValue != 0) {
+			if (provinceIdValue != null && provinceIdValue !== 0) {
 			$.ajax({
 				url: '@Url.Action("GetDistrictByProvinceId", "Districts")',
 				type: 'GET',
@@ -180,7 +180,7 @@
 				$('#districtId').find('option').remove();
 				$('#districtId').append('<option value="">Select District </option>');
 				$(data).each(function(index, item) {
-					if (item.id == districtIdValue) {
+					if (item.id === districtIdValue) {
 						$('#districtId').append('<option selected value="' + item.id + '">' + item.name + '</option>');
 					} else {
 						$('#districtId').append('<option value="' + item.id + '">' + item.name + '</option>');
