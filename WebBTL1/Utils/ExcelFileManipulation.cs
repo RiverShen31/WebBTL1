@@ -20,7 +20,7 @@ namespace WebBTL1.Utils
                 Province province = new();
                 if (row != null)
                 {
-                    for (int j = 0; j < row.LastCellNum; j++)
+                    for (var j = 0; j < row.LastCellNum; j++)
                     {
                         var cell = row.GetCell(j);
                         if (cell != null)
@@ -57,7 +57,7 @@ namespace WebBTL1.Utils
                 District district = new();
                 if (row != null)
                 {
-                    for (int j = 0; j < row.LastCellNum; j++)
+                    for (var j = 0; j < row.LastCellNum; j++)
                     {
                         var cell = row.GetCell(j);
                         if (cell != null)
@@ -98,7 +98,7 @@ namespace WebBTL1.Utils
 
                 if (row != null)
                 {
-                    for (int j = 0; j < row.LastCellNum; j++)
+                    for (var j = 0; j < row.LastCellNum; j++)
                     {
                         var cell = row.GetCell(j);
                         if (cell != null)
@@ -132,7 +132,7 @@ namespace WebBTL1.Utils
             try
             {
                 var sheet = excelFile.Worksheet(1);
-                var startRow = 2; // Row Start data
+                const int startRow = 2; // Row Start data
                 for (var i=startRow; i<= sheet.LastRowUsed()!.RowNumber(); i++)
                 {
                     var row = sheet.Row(i);

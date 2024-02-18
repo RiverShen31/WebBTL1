@@ -6,16 +6,16 @@ namespace WebBTL1.Seed
     {
         public List<Job> Jobs { get; set; } = new() 
         {
-            new() { Id = 1, JobTitle = "Software Developer" },
-            new() { Id = 2, JobTitle = "Marketing Manager" },
-            new() { Id = 3, JobTitle = "Carpenter" },
-            new() { Id = 4, JobTitle = "Laborer" },
-            new() { Id = 5, JobTitle = "Bricklayer" },
-            new() { Id = 6, JobTitle = "Mason" },
-            new() { Id = 7, JobTitle = "Welder" },
-            new() { Id = 8, JobTitle = "Miner" },
-            new() { Id = 9, JobTitle = "Printer" },
-            new() { Id = 10, JobTitle = "Plater" },
+            new Job { Id = 1, JobTitle = "Software Developer" },
+            new Job { Id = 2, JobTitle = "Marketing Manager" },
+            new Job { Id = 3, JobTitle = "Carpenter" },
+            new Job { Id = 4, JobTitle = "Laborer" },
+            new Job { Id = 5, JobTitle = "Bricklayer" },
+            new Job { Id = 6, JobTitle = "Mason" },
+            new Job { Id = 7, JobTitle = "Welder" },
+            new Job { Id = 8, JobTitle = "Miner" },
+            new Job { Id = 9, JobTitle = "Printer" },
+            new Job { Id = 10, JobTitle = "Plater" },
         };
     }
 }

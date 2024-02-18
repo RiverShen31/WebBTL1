@@ -4,23 +4,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using WebBTL1.Repository.Interface;
 using WebBTL1.Services.Interface;
 using WebBTL1.Validators;
-using ClosedXML.Excel;
-using WebBTL1.Utils;
-using System.Data;
-using WebBTL1.ViewModels;
 
 namespace WebBTL1.Controllers
 {
     public class EmployeesController : Controller
     {
         private readonly IEmployeesService _employeeService;
-        private readonly IEmployeesRepo _employeeRepo;
+        private readonly IEmployeesRepo _employeesRepo;
 
-        public EmployeesController(IEmployeesRepo employeeRepo,
+        public EmployeesController(IEmployeesRepo employeesRepo,
             IEmployeesService employeesService)
         {
             _employeeService = employeesService;
-            _employeeRepo = employeeRepo;
+            _employeesRepo = employeesRepo;
         }
 
         public IActionResult Index(int? pageNumber)
@@ -30,7 +26,7 @@ namespace WebBTL1.Controllers
 
         public IActionResult Details(int id)
         {
-            return View(_employeeService.SetEmployeeViewModel(_employeeRepo.GetEmployeeById(id)));
+            return View(_employeeService.SetEmployeeViewModel(_employeesRepo.GetEmployeeById(id)));
         }
 
         public IActionResult Create()
@@ -74,7 +70,7 @@ namespace WebBTL1.Controllers
         public IActionResult Edit(int id)
         {
             DropDownList();
-            var employee = _employeeRepo.GetEmployeeById(id);
+            var employee = _employeesRepo.GetEmployeeById(id);
             return View(employee);
         }
 
@@ -116,7 +112,7 @@ namespace WebBTL1.Controllers
 
         public IActionResult Delete(int id)
         {
-            return View(_employeeService.SetEmployeeViewModel(_employeeRepo.GetEmployeeById(id)));
+            return View(_employeeService.SetEmployeeViewModel(_employeesRepo.GetEmployeeById(id)));
         }
 
         [HttpPost, ActionName("Delete")]
@@ -131,100 +127,27 @@ namespace WebBTL1.Controllers
         [HttpPost]
         public IActionResult Import(IFormFile file)
         {
-            if (file is { Length: > 0})
+            var importResult = _employeeService.ImportEmployees(file);
+            if (!importResult.Success)
             {
-                var memoryStream = new MemoryStream();
-                file.CopyTo(memoryStream);
-                try
-                {
-                    var workbook = new XLWorkbook(memoryStream);
-                    var provinceList = _employeeRepo.GetProvinceList();
-                    var districtList = _employeeRepo.GetDistrictList();
-                    var communeList = _employeeRepo.GetCommuneList();
-
-                    var response = ExcelFileManipulation.ImportEmployee(workbook, provinceList, districtList, communeList);
-
-                    if (response.ErrorMessage != null || response.Employee.Count < 1)
-                    {
-                        TempData["error"] = $"Employee imported fail from {file.FileName}: \n" + response.ErrorMessage?.Content;
-                        return RedirectToAction(nameof(Index));
-                    }
-
-                    var count = 0;
-                    foreach (var employee in response.Employee)
-                    {
-                        count++;
-                        if (!_employeeService.AddEmployee(employee))
-                        {
-                            TempData["error"] = $"Identity number exist in line {count+1}";
-                            return RedirectToAction(nameof(Index));
-                        }
-                    }
-
-                    /*if (response.Employee.Any(employee => !_employeeService.AddEmployee(employee)))
-                    {
-                        TempData["error"] = "Identity number exists!";
-                        return RedirectToAction(nameof(Index));
-                    }*/
-
-                    TempData["success"] = "Employee imported successfully from " + file.FileName;
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception)
-                {
-                    TempData["error"] = "Please choose other type of file";
-                    return RedirectToAction(nameof(Index));
-                }
+                TempData["error"] = importResult.ErrorMessage;
+                return RedirectToAction(nameof(Index));
             }
-            TempData["error"] = "Please choose other type of file";
+            TempData["success"] = "Employee imported successfully from " + file.FileName;
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
         public FileResult ExportEmployeeToExcel()
         {
-            return GenerateExcel(Constant.Constant.FileNameEmployee, 
-                _employeeService.SetEmployeeViewModelList(_employeeRepo.GetEmployeesList()));
-        }
-
-        public FileResult GenerateExcel(string fileName, IEnumerable<EmployeeViewModel> employees)
-        {
-            DataTable dataTable = new DataTable("Employees");
-            dataTable.Columns.AddRange(new[]
-            {
-                new DataColumn("Id"),
-                new DataColumn("Name"),
-                new DataColumn("Dob"),
-                new DataColumn("Age"),
-                new DataColumn("Ethnic"),
-                new DataColumn("Job"),
-                new DataColumn("IdentityNumber"),
-                new DataColumn("PhoneNumber"),
-                new DataColumn("Province"),
-                new DataColumn("District"),
-                new DataColumn("Commune"),
-                new DataColumn("Description")
-            });
-
-            foreach (var person in employees)
-            {
-                dataTable.Rows.Add(person.Id, person.Name, person.Dob, person.Age, person.Ethnic,
-                    person.Job, person.IdentityNumber, person.PhoneNumber, person.Province,
-                    person.District, person.Commune, person.Description);
-            }
-
-            using var wb = new XLWorkbook();
-            wb.Worksheets.Add(dataTable);
-            using var stream = new MemoryStream();
-            wb.SaveAs(stream);
-            return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                fileName);
+            var excelData = _employeeService.ExportEmployeesToExcel();
+            return File(excelData, Constant.Constant.FileExcelContentType, Constant.Constant.FileNameEmployee);
         }
 
         public void DropDownList()
         {
-            ViewBag.EthnicList = new SelectList(_employeeRepo.GetEthnic(), "EthnicName", "EthnicName");
-            ViewBag.JobList = new SelectList(_employeeRepo.GetJob(), "JobTitle", "JobTitle");
+            ViewBag.EthnicList = new SelectList(_employeesRepo.GetEthnic(), "EthnicName", "EthnicName");
+            ViewBag.JobList = new SelectList(_employeesRepo.GetJob(), "JobTitle", "JobTitle");
         }
     }
 }

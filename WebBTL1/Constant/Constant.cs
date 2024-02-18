@@ -11,5 +11,6 @@
         public const int PageDefault = 1;
 
         public const string FileNameEmployee = "Employee.xlsx";
+        public const string FileExcelContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     }
 }

@@ -1,13 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-using WebBTL1.Models;
+﻿using WebBTL1.Models;
 
 namespace WebBTL1.Repository.Interface
 {
     public interface IEmployeesRepo
     {
-        DbSet<Ethnic> GetEthnic();
+        IEnumerable<Ethnic> GetEthnic();
 
-        DbSet<Job> GetJob();
+        IEnumerable<Job> GetJob();
 
         List<Province> GetProvinceList();
 

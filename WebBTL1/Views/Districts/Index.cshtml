@@ -12,15 +12,12 @@
         <tr>
             <th>
                 Name
-                @*@Html.DisplayNameFor(model => model.Name)*@
             </th>
             <th>
                 Level
-                @*@Html.DisplayNameFor(model => model.Level)*@
             </th>
             <th>
                 Province
-                @*@Html.DisplayNameFor(model => model.Province)*@
             </th>
             <th></th>
         </tr>
@@ -35,7 +32,7 @@
                 @Html.DisplayFor(modelItem => item.Level)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Province.Name)
+                @Html.DisplayFor(modelItem => item.Province!.Name)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

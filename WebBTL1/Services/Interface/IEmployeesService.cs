@@ -17,5 +17,9 @@ namespace WebBTL1.Services.Interface
         List<EmployeeViewModel> SetEmployeeViewModelList(List<Employee?> employees);
 
         PaginatedList<EmployeeViewModel> PaginatedEmployeeViewModel(int? pageNumber);
+
+        ImportResult ImportEmployees(IFormFile file);
+
+        byte[] ExportEmployeesToExcel();
     }
 }

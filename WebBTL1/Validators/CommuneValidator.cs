@@ -9,7 +9,7 @@ namespace WebBTL1.Validators
 		{
 			RuleFor(x => x.Name)
 				.NotEmpty().WithMessage("Name is required.")
-				.Length(3, 30).WithMessage("Must be between 3 and 30 characters.");
+				.MaximumLength(50).WithMessage("Must be between 3 and 30 characters.");
 
 			RuleFor(x => x.Level)
 				.NotEmpty().WithMessage("Level is required.");

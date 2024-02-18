@@ -1,8 +1,11 @@
-﻿using WebBTL1.Models;
+﻿using ClosedXML.Excel;
+using System.Data;
+using WebBTL1.Models;
 using WebBTL1.Pagination;
 using WebBTL1.Repository.Interface;
 using WebBTL1.Services.Interface;
 using WebBTL1.Services.Validation;
+using WebBTL1.Utils;
 using WebBTL1.ViewModels;
 
 namespace WebBTL1.Services;
@@ -100,11 +103,95 @@ public class EmployeesService : IEmployeesService
     private bool CheckIdentityNumberDuplicate(Employee? employee, int id)
     {
         if (!string.IsNullOrWhiteSpace(employee?.IdentityNumber))
-        /*if (employee?.IdentityNumber != null)*/
         {
             return _employeesRepo.GetEmployeesList()
                     .Exists(e => e!.IdentityNumber == employee.IdentityNumber && e.Id != id);
         }
         return false;
+    }
+
+    public ImportResult ImportEmployees(IFormFile file)
+    {
+        if (file is { Length: > 0})
+        {
+            var memoryStream = new MemoryStream();
+            file.CopyTo(memoryStream);
+            try
+            {
+                var workbook = new XLWorkbook(memoryStream);
+                var provinceList = _employeesRepo.GetProvinceList();
+                var districtList = _employeesRepo.GetDistrictList();
+                var communeList = _employeesRepo.GetCommuneList();
+
+                var response = ExcelFileManipulation.ImportEmployee(workbook, provinceList, districtList, communeList);
+
+                if (response.ErrorMessage != null || response.Employee.Count < 1)
+                {
+                    return new ImportResult
+                    {
+                        Success = false,
+                        ErrorMessage = $"Employee imported fail from {file.FileName}: \n" + response.ErrorMessage?.Content
+                    };
+                }
+                var count = 0;
+                foreach (var employee in response.Employee)
+                {
+                    count++;
+                    if (!AddEmployee(employee))
+                    {
+                        return new ImportResult
+                        {
+                            Success = false,
+                            ErrorMessage = $"Identity number exist in line {count + 1}"
+                        };
+                    }
+                }
+                return new ImportResult { Success = true };
+            }
+            catch (Exception)
+            {
+                return new ImportResult { Success = false, ErrorMessage = "Please choose another type of file" };
+            }
+        }
+        return new ImportResult { Success = false, ErrorMessage = "Please choose another type of file" };
+    }
+
+    public byte[] ExportEmployeesToExcel()
+    {
+        var employees = SetEmployeeViewModelList(_employeesRepo.GetEmployeesList());
+        return GenerateExcel(Constant.Constant.FileNameEmployee, employees);
+    }
+
+    private byte[] GenerateExcel(string fileName, IEnumerable<EmployeeViewModel> employees)
+    {
+        DataTable dataTable = new DataTable("Employees");
+        dataTable.Columns.AddRange(new[]
+        {
+            new DataColumn("Id"),
+            new DataColumn("Name"),
+            new DataColumn("Dob"),
+            new DataColumn("Age"),
+            new DataColumn("Ethnic"),
+            new DataColumn("Job"),
+            new DataColumn("IdentityNumber"),
+            new DataColumn("PhoneNumber"),
+            new DataColumn("Province"),
+            new DataColumn("District"),
+            new DataColumn("Commune"),
+            new DataColumn("Description")
+        });
+
+        foreach (var person in employees)
+        {
+            dataTable.Rows.Add(person.Id, person.Name, person.Dob, person.Age, person.Ethnic,
+                person.Job, person.IdentityNumber, person.PhoneNumber, person.Province,
+                person.District, person.Commune, person.Description);
+        }
+
+        using var wb = new XLWorkbook();
+        wb.Worksheets.Add(dataTable);
+        using var stream = new MemoryStream();
+        wb.SaveAs(stream);
+        return stream.ToArray();
     }
 }

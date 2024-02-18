@@ -6,16 +6,16 @@ namespace WebBTL1.Seed
     {
         public List<Ethnic> EthnicGroups { get; set; } = new() 
         {
-            new() { Id = 1, EthnicName = "Kinh" },
-            new() { Id = 2, EthnicName = "Tay" },
-            new() { Id = 3, EthnicName = "Muong" },
-            new() { Id = 4, EthnicName = "Thai"},
-            new() { Id = 5, EthnicName = "Khmer"},
-            new() { Id = 6, EthnicName = "Hoa"},
-            new() { Id = 7, EthnicName = "Dao"},
-            new() { Id = 8, EthnicName = "Hmong"},
-            new() { Id = 9, EthnicName = "Nung"},
-            new() {Id = 10, EthnicName = "Cham"}
+            new Ethnic { Id = 1, EthnicName = "Kinh" },
+            new Ethnic { Id = 2, EthnicName = "Tay" },
+            new Ethnic { Id = 3, EthnicName = "Muong" },
+            new Ethnic { Id = 4, EthnicName = "Thai"},
+            new Ethnic { Id = 5, EthnicName = "Khmer"},
+            new Ethnic { Id = 6, EthnicName = "Hoa"},
+            new Ethnic { Id = 7, EthnicName = "Dao"},
+            new Ethnic { Id = 8, EthnicName = "Hmong"},
+            new Ethnic { Id = 9, EthnicName = "Nung"},
+            new Ethnic {Id = 10, EthnicName = "Cham"}
         };
     }
 }

@@ -15,6 +15,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\Communes\Employees\**" />
+    <Content Remove="Views\Communes\Employees\**" />
+    <EmbeddedResource Remove="Views\Communes\Employees\**" />
+    <None Remove="Views\Communes\Employees\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.102.2" />
     <PackageReference Include="FluentValidation" Version="11.8.1" />
     <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.3.0" />
@@ -34,14 +41,6 @@
     <_ContentIncludedByDefault Remove="Views\Employees\Details.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Employees\Edit.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Employees\Index.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="Views\Communes\Employees\Create.cshtml" />
-    <AdditionalFiles Include="Views\Communes\Employees\Delete.cshtml" />
-    <AdditionalFiles Include="Views\Communes\Employees\Details.cshtml" />
-    <AdditionalFiles Include="Views\Communes\Employees\Edit.cshtml" />
-    <AdditionalFiles Include="Views\Communes\Employees\Index.cshtml" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using WebBTL1.Data;
+﻿using WebBTL1.Data;
 using WebBTL1.Models;
 using WebBTL1.Repository.Interface;
 
@@ -14,12 +13,12 @@ namespace WebBTL1.Repository
             _context = context;
         }
 
-        public DbSet<Ethnic> GetEthnic()
+        public IEnumerable<Ethnic> GetEthnic()
         {
             return _context.Ethnices;
         }
 
-        public DbSet<Job> GetJob()
+        public IEnumerable<Job> GetJob()
         {
             return _context.Jobs;
         }
