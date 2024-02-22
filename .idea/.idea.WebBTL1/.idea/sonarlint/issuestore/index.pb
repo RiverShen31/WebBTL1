@@ -81,8 +81,6 @@ S
 -WebBTL1/Repository/Interface/IProvinceRepo.cs,1\b\1bbb4b89d2cce9a43f9471fda0f1b3722eb7e97b
 W
 'WebBTL1/Services/Validation/Validate.cs,a\a\aaade960e00d3d2deba7a1c1688bd734b1833ea2
-d
-4WebBTL1/Specification/EmployeeDetailSpecification.cs,f\0\f0d00cf761234438d84aee6b3455737f29eb058e
 V
 &WebBTL1/Validators/CommuneValidator.cs,6\f\6f34b7c705a85266e31a37edebb770b8cd18a8fd
 W
@@ -123,3 +121,13 @@ U
 %WebBTL1/Views/Employees/Delete.cshtml,8\e\8eaea245e1495683dc825e2eca7c0c4911cb4ad2
 N
 WebBTL1/Models/ImportResult.cs,6\c\6c1593940e292f463c2a675e1c1bebd35a863c1a
+B
+WebBTL1/Program.cs,e\2\e2013a83264526eeb017769946c373ed016386e7
+H
+WebBTL1/appsettings.json,b\6\b671cae9da0fbad937e0547df183579bc49a27fd
+T
+$WebBTL1/appsettings.Development.json,b\7\b7d0a6211c661d370b4af48d31f438849dbd309d
+]
+-WebBTL1/Services/Interface/IDiplomaService.cs,7\8\78150598f41cb16cf0a54135cdcb33a28bcc737c
+R
+"WebBTL1/Services/DiplomaService.cs,d\7\d728ab266bf84af862d817c93828f03722c03af2

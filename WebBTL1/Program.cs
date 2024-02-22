@@ -28,6 +28,13 @@ builder.Services.AddScoped<IDistrictRepo, DistrictRepo>();
 builder.Services.AddScoped<ICommuneService, CommuneService>();
 builder.Services.AddScoped<ICommuneRepo, CommuneRepo>();
 
+// Diplomas
+builder.Services.AddScoped<IDiplomaRepo, DiplomaRepo>();
+builder.Services.AddScoped<IDiplomaService, DiplomaService>();
+
+// AwardDiplomas
+builder.Services.AddScoped<IAwardDiplomaService, AwardDiplomaService>();
+builder.Services.AddScoped<IAwardDiplomaRepo, AwardDiplomaRepo>();
 
 
 var app = builder.Build();

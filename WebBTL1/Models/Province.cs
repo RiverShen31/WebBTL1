@@ -12,5 +12,7 @@ namespace WebBTL1.Models
         public string? Level { get; set; }
 
         public ICollection<District>? Districts { get; set; }
+
+        public ICollection<AwardDiploma> AwardDiplomas { get; set; }
     }
 }

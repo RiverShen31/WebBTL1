@@ -1,0 +1,79 @@
+﻿@model WebBTL1.Models.AwardDiploma
+
+@{
+	ViewData["Title"] = "Edit";
+}
+<hr />
+
+<div class="container">
+	<div asp-validation-summary="All"></div>
+
+	<form asp-action="Edit">
+		<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+		<div class="row">
+
+			<div class="col-sm">
+				<div class="form-group">
+					<label asp-for="EmployeeId" class="control-label">Employee</label>
+					<select asp-for="EmployeeId" asp-items="ViewBag.EmployeeList" class="form-control">
+						<option value="">Select Employee</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="col-sm">
+				<div class="form-group">
+					<label asp-for="DiplomaId" class="control-label">Diploma</label>
+					<select asp-for="DiplomaId" asp-items="ViewBag.DiplomaList" class="form-control">
+						<option value="">Select Diploma</option>
+					</select>
+				</div>
+			</div>
+			<div class="col-sm">
+				<div class="form-group">
+					<label asp-for="DiplomaGrantingUnitId" class="control-lable">Diploma Grating Unit</label>
+					<select asp-for="DiplomaGrantingUnitId" asp-items="ViewBag.ProvinceList" class="form-control">
+						<option value="">Select Diploma Granting Unit</option>
+						</select> 
+				</div>
+			</div>
+
+			<div class="col-sm">
+				<div class="form-group">
+					<label asp-for="GrantingDate" class="control-label">Granting Date</label>
+					<input asp-for="GrantingDate" type="date" class="form-control" />
+					<span asp-validation-for="GrantingDate" class="text-danger"></span>
+				</div>
+			</div>
+
+			<div class="col-sm">
+				<div class="form-group">
+					<label asp-for="Duration" class="control-label">Duration</label>
+					<input asp-for="Duration" class="form-control" />
+					<span asp-validation-for="Duration" class="text-danger"></span>
+				</div>
+			</div>
+		</div>
+		<hr />
+		<div class="row">
+			<div class="col-sm">
+				<div>
+					<a asp-action="Index">Back to List</a>
+				</div>
+
+			</div>
+			<div class="col-sm"></div>
+			<div class="col-sm"></div>
+			<div class="col-sm d-flex flex-row-reverse">
+				<button id="submit" type="submit" value="Create" class="btn btn-primary">Submit</button>
+			</div>
+
+		</div>
+
+	</form>
+
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

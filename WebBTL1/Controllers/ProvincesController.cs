@@ -91,7 +91,6 @@ namespace WebBTL1.Controllers
 			_provinceService.UpdateProvince(province);
             TempData["success"] = "Category updated successfully";
             return RedirectToAction(nameof(Index));
-
         }
 
         public IActionResult Delete(int id)

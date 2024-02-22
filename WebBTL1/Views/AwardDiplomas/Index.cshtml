@@ -1,0 +1,77 @@
+﻿@using WebBTL1.Pagination;
+@using WebBTL1.ViewModels;
+@model PaginatedList<AwardDiplomaViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                Employee
+            </th>
+            <th>
+                Diploma
+            </th>
+            <th>
+                Diploma Granting Unit
+            </th>
+            <th>
+                Granting Date
+            </th>
+            <th>
+                Duration
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Employee)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Diploma)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DiplomaGrantingUnit)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GrantingDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Duration)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<br />
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+<a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex-1)" class="btn btn-default @prevDisabled">
+    Previous
+</a>
+<a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex+1)" class="btn btn-default @nextDisabled">
+    Next
+</a>

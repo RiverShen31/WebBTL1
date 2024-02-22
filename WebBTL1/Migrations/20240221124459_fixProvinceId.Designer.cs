@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebBTL1.Data;
 
@@ -11,9 +12,10 @@ using WebBTL1.Data;
 namespace WebBTL1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240221124459_fixProvinceId")]
+    partial class fixProvinceId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,12 +47,13 @@ namespace WebBTL1.Migrations
                     b.Property<DateTime>("GrantingDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ProvinceId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ProvinceId");
+                    b.HasIndex("DiplomaGrantingUnitId");
+
+                    b.HasIndex("DiplomaId");
+
+                    b.HasIndex("EmployeeId");
 
                     b.ToTable("AwardDiplomas");
                 });
@@ -79956,9 +79959,29 @@ namespace WebBTL1.Migrations
 
             modelBuilder.Entity("WebBTL1.Models.AwardDiploma", b =>
                 {
-                    b.HasOne("WebBTL1.Models.Province", null)
-                        .WithMany("AwardDiplomas")
-                        .HasForeignKey("ProvinceId");
+                    b.HasOne("WebBTL1.Models.Province", "DiplomaGrantingUnit")
+                        .WithMany()
+                        .HasForeignKey("DiplomaGrantingUnitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebBTL1.Models.Diploma", "Diploma")
+                        .WithMany()
+                        .HasForeignKey("DiplomaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebBTL1.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Diploma");
+
+                    b.Navigation("DiplomaGrantingUnit");
+
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("WebBTL1.Models.Commune", b =>
@@ -79992,8 +80015,6 @@ namespace WebBTL1.Migrations
 
             modelBuilder.Entity("WebBTL1.Models.Province", b =>
                 {
-                    b.Navigation("AwardDiplomas");
-
                     b.Navigation("Districts");
                 });
 #pragma warning restore 612, 618

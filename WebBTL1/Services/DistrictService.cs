@@ -27,8 +27,7 @@ namespace WebBTL1.Services
 
         public void DeleteDistrict(int id)
         {
-            var district = _districtRepo.Find(id);
-            _districtRepo.Remove(district);
+            _districtRepo.Remove(_districtRepo.Find(id));
         }
         public PaginatedList<District> PaginatedDistrict(int? pageNumber)
         {

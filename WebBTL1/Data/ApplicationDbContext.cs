@@ -17,6 +17,9 @@ namespace WebBTL1.Data
         public DbSet<Province> Provinces { get; set; }
         public DbSet<District> Districts { get; set; }
         public DbSet<Commune> Communes { get; set; }
+		public DbSet<Diploma> Diplomas { get; set; }
+		public DbSet<AwardDiploma> AwardDiplomas { get; set; }
+
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -32,14 +35,14 @@ namespace WebBTL1.Data
 			{
 				entity.HasData(new SeedAdministrativeCountrySubdivision().Provinces);
 				entity.ToTable("Province");
-				entity.Property(e => e.Id).HasColumnName("id");
+				entity.Property(e => e.Id).HasColumnName("Id");
 			});
 
 			modelBuilder.Entity<District>(entity =>
 			{
 				entity.HasData(new SeedAdministrativeCountrySubdivision().Districts);
 				entity.ToTable("District");
-				entity.Property(e => e.Id).HasColumnName("id");
+				entity.Property(e => e.Id).HasColumnName("Id");
 				entity.Property(e => e.ProvinceId).HasColumnName("ProvinceId");
 				entity.HasOne(e => e.Province)
 						.WithMany(x => x.Districts)
@@ -59,6 +62,8 @@ namespace WebBTL1.Data
 						.OnDelete(DeleteBehavior.Cascade)
 						.HasConstraintName("fk_district_id");
             });
+
+            modelBuilder.Entity<Diploma>().HasData(new SeedDiploma().DiplomaList);
         }
 	}
 }

@@ -70,8 +70,7 @@ namespace WebBTL1.Controllers
         public IActionResult Edit(int id)
         {
             DropDownList();
-            var employee = _employeesRepo.GetEmployeeById(id);
-            return View(employee);
+            return View(_employeesRepo.GetEmployeeById(id));
         }
 
         [HttpPost]

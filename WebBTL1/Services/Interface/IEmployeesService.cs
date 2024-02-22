@@ -20,6 +20,6 @@ namespace WebBTL1.Services.Interface
 
         ImportResult ImportEmployees(IFormFile file);
 
-        byte[] ExportEmployeesToExcel();
+        byte[]  ExportEmployeesToExcel();
     }
 }

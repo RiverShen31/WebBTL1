@@ -56,7 +56,6 @@ namespace WebBTL1.Repository
 
         public void Insert(Employee? employee)
         {
-            
             _context.Employees.Add(employee);
             _context.SaveChanges();
         }
