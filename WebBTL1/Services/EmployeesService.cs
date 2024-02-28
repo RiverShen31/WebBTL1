@@ -112,46 +112,45 @@ public class EmployeesService : IEmployeesService
 
     public ImportResult ImportEmployees(IFormFile file)
     {
-        if (file is { Length: > 0})
+        if (file is not { Length: > 0 })
+            return new ImportResult { Success = false, ErrorMessage = "Please choose another type of file" };
+        var memoryStream = new MemoryStream();
+        file.CopyTo(memoryStream);
+        try
         {
-            var memoryStream = new MemoryStream();
-            file.CopyTo(memoryStream);
-            try
+            var workbook = new XLWorkbook(memoryStream);
+            var provinceList = _employeesRepo.GetProvinceList();
+            var districtList = _employeesRepo.GetDistrictList();
+            var communeList = _employeesRepo.GetCommuneList();
+
+            var response = ExcelFileManipulation.ImportEmployee(workbook, provinceList, districtList, communeList);
+
+            if (response.ErrorMessage != null || response.Employee.Count < 1)
             {
-                var workbook = new XLWorkbook(memoryStream);
-                var provinceList = _employeesRepo.GetProvinceList();
-                var districtList = _employeesRepo.GetDistrictList();
-                var communeList = _employeesRepo.GetCommuneList();
-
-                var response = ExcelFileManipulation.ImportEmployee(workbook, provinceList, districtList, communeList);
-
-                if (response.ErrorMessage != null || response.Employee.Count < 1)
+                return new ImportResult
+                {
+                    Success = false,
+                    ErrorMessage = $"Employee imported fail from {file.FileName}: \n" + response.ErrorMessage?.Content
+                };
+            }
+            var count = 0;
+            foreach (var employee in response.Employee)
+            {
+                count++;
+                if (!AddEmployee(employee))
                 {
                     return new ImportResult
                     {
                         Success = false,
-                        ErrorMessage = $"Employee imported fail from {file.FileName}: \n" + response.ErrorMessage?.Content
+                        ErrorMessage = $"Identity number exist in line {count + 1}"
                     };
                 }
-                var count = 0;
-                foreach (var employee in response.Employee)
-                {
-                    count++;
-                    if (!AddEmployee(employee))
-                    {
-                        return new ImportResult
-                        {
-                            Success = false,
-                            ErrorMessage = $"Identity number exist in line {count + 1}"
-                        };
-                    }
-                }
-                return new ImportResult { Success = true };
             }
-            catch (Exception)
-            {
-                return new ImportResult { Success = false, ErrorMessage = "Please choose another type of file" };
-            }
+            return new ImportResult { Success = true };
+        }
+        catch (Exception)
+        {
+            return new ImportResult { Success = false, ErrorMessage = "Please choose another type of file" };
         }
         return new ImportResult { Success = false, ErrorMessage = "Please choose another type of file" };
     }
@@ -159,12 +158,12 @@ public class EmployeesService : IEmployeesService
     public byte[] ExportEmployeesToExcel()
     {
         var employees = SetEmployeeViewModelList(_employeesRepo.GetEmployeesList());
-        return GenerateExcel(Constant.Constant.FileNameEmployee, employees);
+        return GenerateExcel(employees);
     }
 
-    private byte[] GenerateExcel(string fileName, IEnumerable<EmployeeViewModel> employees)
+    private static byte[] GenerateExcel(IEnumerable<EmployeeViewModel> employees)
     {
-        DataTable dataTable = new DataTable("Employees");
+        var dataTable = new DataTable("Employees");
         dataTable.Columns.AddRange(new[]
         {
             new DataColumn("Id"),

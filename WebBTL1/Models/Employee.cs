@@ -45,7 +45,9 @@ namespace WebBTL1.Models
 		public int District { get; set; }
 
 		public int Commune { get; set; }
+		
 		public string? Description { get; set; }
+		
 		public static int SetAge(DateTime dob)
 		{
 			return DateTime.Now.Year - dob.Year;

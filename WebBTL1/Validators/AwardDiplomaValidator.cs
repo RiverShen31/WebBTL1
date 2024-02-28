@@ -32,9 +32,9 @@ namespace WebBTL1.Validators
 
         private bool BeUniqueDiplomaIdForEmployee(AwardDiploma awardDiploma)
         {
-            int employeeId = awardDiploma.EmployeeId;
-            int diplomaId = awardDiploma.DiplomaId;
-            int currentRecordId = awardDiploma.Id;
+            var employeeId = awardDiploma.EmployeeId;
+            var diplomaId = awardDiploma.DiplomaId;
+            var currentRecordId = awardDiploma.Id;
 
             // Check if there is no other record with the same DiplomaId for the same EmployeeId
             return !_awardDiplomaRepo.HasDuplicateDiplomaIdForEmployee(employeeId, diplomaId, currentRecordId);

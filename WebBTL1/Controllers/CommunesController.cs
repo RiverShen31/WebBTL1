@@ -36,18 +36,6 @@ namespace WebBTL1.Controllers
 			return View(_communeRepo.Find(id));
 		}
 
-		public void DropDownList()
-		{
-			var communeLevel = new List<string>
-			{
-				"Phường",
-				"Xã",
-				"Thị trấn"
-			};
-			ViewBag.LevelList = new SelectList(communeLevel);
-			ViewData["DistrictId"] = new SelectList(_districtRepo.GetDistrictList(), "Id", "Name");
-		}
-
 		public IActionResult Create()
 		{
 			DropDownList();
@@ -118,6 +106,18 @@ namespace WebBTL1.Controllers
 		{
 			_communeService.DeleteCommune(id);
 			return RedirectToAction(nameof(Index));
+		}
+		
+		public void DropDownList()
+		{
+			var communeLevel = new List<string>
+			{
+				"Phường",
+				"Xã",
+				"Thị trấn"
+			};
+			ViewBag.LevelList = new SelectList(communeLevel);
+			ViewData["DistrictId"] = new SelectList(_districtRepo.GetDistrictList(), "Id", "Name");
 		}
 	}
 }

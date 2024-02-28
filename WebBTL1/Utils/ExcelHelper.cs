@@ -2,7 +2,7 @@
 
 namespace WebBTL1.Utils;
 
-public class ExcelHelper
+public abstract class ExcelHelper
 {
     public static string GetValue(IXLWorksheet sheet, int row, int column)
     {

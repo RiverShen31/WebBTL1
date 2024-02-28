@@ -40,17 +40,17 @@ namespace WebBTL1.Validators
 				.NotEmpty().WithMessage("Commune is required.");
 		}
 
-		private bool ValidateName(string name)
+		private static bool ValidateName(string name)
 		{
 			return Regex.IsMatch(name, "^[a-zA-Z ]*$");
 		}
 
-		private bool ValidateDob(DateTime dob)
+		private static bool ValidateDob(DateTime dob)
 		{
 			return Constant.Constant.MinYear <= dob.Year && dob.Year < DateTime.Now.Year;
 		}
 
-		private bool IsPhoneNumber(string phoneNumber)
+		private static bool IsPhoneNumber(string phoneNumber)
 		{
 			return string.IsNullOrEmpty(phoneNumber) || phoneNumber.All(char.IsDigit);
 		}

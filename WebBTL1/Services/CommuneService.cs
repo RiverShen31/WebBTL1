@@ -34,8 +34,9 @@ namespace WebBTL1.Services
         public PaginatedList<Commune> PaginatedCommune(int? pageNumber)
         {
             return PaginatedList<Commune>.Create(_communeRepo.GetCommuneListByPageNumber(Validate.ValidatePageNumber(ref pageNumber)),
-                                                        _communeRepo.GetCommuneCount()
-                                                    , Validate.ValidatePageNumber(ref pageNumber), Constant.Constant.PageSize);
+                                                _communeRepo.GetCommuneCount(),
+                                                Validate.ValidatePageNumber(ref pageNumber), 
+                                                Constant.Constant.PageSize);
 		}
     }
 }

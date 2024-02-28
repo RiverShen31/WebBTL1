@@ -32,8 +32,10 @@ namespace WebBTL1.Services
 
         public PaginatedList<Diploma> PaginatedDiploma(int? pageNumber)
         {
-            return PaginatedList<Diploma>.Create(_diplomaRepo.GetDiplomaListByPageNumber(Validate.ValidatePageNumber(ref pageNumber)), _diplomaRepo.GetDiplomaCount(),
-                                                    Validate.ValidatePageNumber(ref pageNumber), Constant.Constant.PageSize);
+            return PaginatedList<Diploma>.Create(_diplomaRepo.GetDiplomaListByPageNumber(Validate.ValidatePageNumber(ref pageNumber)), 
+                                                _diplomaRepo.GetDiplomaCount(),
+                                                Validate.ValidatePageNumber(ref pageNumber), 
+                                                        Constant.Constant.PageSize);
         }
     }
 }

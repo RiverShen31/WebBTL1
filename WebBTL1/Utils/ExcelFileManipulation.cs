@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using NPOI.HSSF.UserModel;
 using System.Text;
+using NPOI.SS.UserModel;
 using WebBTL1.Models;
 using WebBTL1.Services.Validation;
 
@@ -8,122 +9,64 @@ namespace WebBTL1.Utils
 {
     public abstract class ExcelFileManipulation
     {
-        public static List<Province> GetProvinces(string fileName)
+        private const int ColumnId = 0;
+        private const int ColumnName = 1;
+        private const int ColumnLevel = 2;
+        private static List<T> GetEntities<T>(string fileName, Func<IRow, T> createEntity)
         {
-            List<Province> provinces = new List<Province>();
+            var entities = new List<T>();
             using var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            var workBook = new HSSFWorkbook(fs);
-            var sheet = workBook.GetSheetAt(0);
-            for (int i = 1; i <= sheet.LastRowNum - 1; i++)
-            {
-                var row = sheet.GetRow(i);
-                Province province = new();
-                if (row != null)
-                {
-                    for (var j = 0; j < row.LastCellNum; j++)
-                    {
-                        var cell = row.GetCell(j);
-                        if (cell != null)
-                        {
-                            switch (j)
-                            {
-                                case 0:
-                                    province.Id = int.Parse(cell.StringCellValue);
-                                    break;
-                                case 1:
-                                    province.Name = cell.StringCellValue;
-                                    break;
-                                case 2:
-                                    province.Level = cell.StringCellValue;
-                                    break;
-                            }
-                        }
-                    }
-                }
-                provinces.Add(province);
-            }
-            return provinces;
-        }
-
-        public static List<District> GetDistricts(string filename)
-        {
-            List<District> districts = new();
-            using var fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
             var workbook = new HSSFWorkbook(fs);
             var sheet = workbook.GetSheetAt(0);
-            for (int i = 1; i <= sheet.LastRowNum - 1; i++)
+            for (var i = 1; i <= sheet.LastRowNum - 1; i++)
             {
                 var row = sheet.GetRow(i);
-                District district = new();
-                if (row != null)
-                {
-                    for (var j = 0; j < row.LastCellNum; j++)
-                    {
-                        var cell = row.GetCell(j);
-                        if (cell != null)
-                        {
-                            switch (j)
-                            {
-                                case 0:
-                                    district.Id = int.Parse(cell.StringCellValue);
-                                    break;
-                                case 1:
-                                    district.Name = cell.StringCellValue;
-                                    break;
-                                case 2:
-                                    district.Level = cell.StringCellValue;
-                                    break;
-                                case 3:
-                                    district.ProvinceId = int.Parse(cell.StringCellValue);
-                                    break;
-                            }
-                        }
-                    }
-                }
-                districts.Add(district);
+                if (row == null) continue;
+                var entity = createEntity(row);
+                entities.Add(entity);
             }
-            return districts;
+            return entities;
+        }
+
+        private static T? GetCellValue<T>(IRow row, int columnIndex)
+        {
+            var cell = row.GetCell(columnIndex);
+            return cell != null ? (T)Convert.ChangeType(cell.StringCellValue, typeof(T)): default(T);
+        }
+        
+        public static List<Province> GetProvinces(string fileName)
+        {
+            
+            return GetEntities(fileName, row => new Province
+            {
+                Id = int.Parse(GetCellValue<string>(row, ColumnId) ?? string.Empty),
+                Name = GetCellValue<string>(row, ColumnName),
+                Level = GetCellValue<string>(row, ColumnLevel)
+            });
+        }
+        
+        public static List<District> GetDistricts(string filename)
+        {
+            const int columnProvinceId = 3;
+            return GetEntities(filename, row => new District
+            {
+                Id = int.Parse(GetCellValue<string>(row, ColumnId) ?? string.Empty),
+                Name = GetCellValue<string>(row, ColumnName),
+                Level = GetCellValue<string>(row, ColumnLevel),
+                ProvinceId = int.Parse(GetCellValue<string>(row, columnProvinceId) ?? string.Empty)
+            });
         }
 
         public static List<Commune> GetCommunes(string filename)
         {
-            List<Commune> communes = new();
-            using var fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
-            var workbook = new HSSFWorkbook(fs);
-            var sheet = workbook.GetSheetAt(0);
-            for (int i = 1; i <= sheet.LastRowNum - 1; i++)
+            const int columnDistrictId = 3;
+            return GetEntities(filename, row => new Commune
             {
-                var row = sheet.GetRow(i);
-                Commune commune = new();
-
-                if (row != null)
-                {
-                    for (var j = 0; j < row.LastCellNum; j++)
-                    {
-                        var cell = row.GetCell(j);
-                        if (cell != null)
-                        {
-                            switch (j)
-                            {
-                                case 0:
-                                    commune.Id = int.Parse(cell.StringCellValue);
-                                    break;
-                                case 1:
-                                    commune.Name = cell.StringCellValue;
-                                    break;
-                                case 2:
-                                    commune.Level = cell.StringCellValue;
-                                    break;
-                                case 3:
-                                    commune.DistrictId = int.Parse(cell.StringCellValue);
-                                    break;
-                            }
-                        }
-                    }
-                }
-                communes.Add(commune);
-            }
-            return communes;
+                Id = int.Parse(GetCellValue<string>(row, ColumnId) ?? string.Empty),
+                Name = GetCellValue<string>(row, ColumnName),
+                Level = GetCellValue<string>(row, ColumnLevel),
+                DistrictId = int.Parse(GetCellValue<string>(row, columnDistrictId) ?? string.Empty)
+            });
         }
 
         public static Response ImportEmployee(XLWorkbook excelFile, List<Province> provinces, List<District> districts, List<Commune> communes)
@@ -169,7 +112,6 @@ namespace WebBTL1.Utils
             var province = GetProvince(sheet, row.RowNumber(), 8, errorMessage, provinces);
             var district = GetDistrict(sheet, row.RowNumber(), 9, errorMessage, districts, province);
             var commune = GetCommune(sheet, row.RowNumber(), 10, errorMessage, communes, district);
-            
 
             employee.Province = province;
             employee.District = district;

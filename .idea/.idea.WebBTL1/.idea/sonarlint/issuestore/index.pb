@@ -159,3 +159,15 @@ V
 &WebBTL1/Validators/DiplomaValidator.cs,7\a\7ac6c0ef8e167811d6d72f8e69f247ffdf5fcde6
 [
 +WebBTL1/ViewModels/AwardDiplomaViewModel.cs,6\b\6bb1c0d67e6949c670c01541161f533807fd9fb2
+T
+$WebBTL1/Views/Provinces/Index.cshtml,a\5\a5fed2ae6140be539860b952a7ecb6df7acb98e0
+S
+#WebBTL1/Views/Diplomas/Index.cshtml,f\8\f8fdf5cd8bb927817f77390b355fb9009a22143c
+X
+(WebBTL1/Views/AwardDiplomas/Index.cshtml,a\6\a6a692ddd3e6b89a5a5d461744165f40b2d3f292
+Q
+!WebBTL1/Views/_ViewImports.cshtml,3\e\3e5ee42a05002639ce403e7cfd43f2c0d785ffa8
+O
+WebBTL1/Views/_ViewStart.cshtml,5\4\548aaa7512a63d66630442bf54a35d1b22aed7e8
+S
+#WebBTL1/Views/Shared/_Layout.cshtml,4\f\4f61b60db4aeb8416f5bccf2c7eb752945ba10b2

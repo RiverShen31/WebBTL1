@@ -33,8 +33,9 @@ namespace WebBTL1.Services
         public PaginatedList<Province> PaginatedProvince(int? pageNumber)
         {
             return PaginatedList<Province>.Create(_provinceRepo.GetProvinceListByPageNumber(Validate.ValidatePageNumber(ref pageNumber)),
-														_provinceRepo.GetProvinceCount(),
-											 Validate.ValidatePageNumber(ref pageNumber), Constant.Constant.PageSize);
+                                                _provinceRepo.GetProvinceCount(),
+											    Validate.ValidatePageNumber(ref pageNumber), 
+                                                Constant.Constant.PageSize);
         }
     }
 }

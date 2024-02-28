@@ -31,8 +31,10 @@ namespace WebBTL1.Services
         }
         public PaginatedList<District> PaginatedDistrict(int? pageNumber)
         {
-            return PaginatedList<District>.Create(_districtRepo.GetDistrictListByPageNumber(Validate.ValidatePageNumber(ref pageNumber)), _districtRepo.GetDistrictCount(),
-                                                    Validate.ValidatePageNumber(ref pageNumber), Constant.Constant.PageSize);
+            return PaginatedList<District>.Create(_districtRepo.GetDistrictListByPageNumber(Validate.ValidatePageNumber(ref pageNumber)), 
+                                                _districtRepo.GetDistrictCount(),
+                                                Validate.ValidatePageNumber(ref pageNumber), 
+                                                Constant.Constant.PageSize);
 		}
     }
 }

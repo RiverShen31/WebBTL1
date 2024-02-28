@@ -59,8 +59,9 @@ namespace WebBTL1.Services
         public PaginatedList<AwardDiplomaViewModel> PaginatedAwardDiplomaViewModel(int? pageNumber)
         {
             return PaginatedList<AwardDiplomaViewModel>.Create(SetAwardDiplomaViewModelList(_awardDiplomaRepo.GetAwardDiplomaListByPageNumber(Validate.ValidatePageNumber(ref pageNumber))!),
-                                                        _awardDiplomaRepo.GetAwardDiplomaCount()
-                                                    , Validate.ValidatePageNumber(ref pageNumber), Constant.Constant.PageSize);
+                                                            _awardDiplomaRepo.GetAwardDiplomaCount(),
+                                                        Validate.ValidatePageNumber(ref pageNumber), 
+                                                            Constant.Constant.PageSize);
         }
     }
 }
