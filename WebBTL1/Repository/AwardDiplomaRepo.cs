@@ -35,7 +35,7 @@ namespace WebBTL1.Repository
             return _context.AwardDiplomas.Find(id)!;
         }
 
-        public List<AwardDiploma?> GetAwardDiplomaListByPageNumber(int pageNumber)
+        public List<AwardDiploma> GetAwardDiplomaListByPageNumber(int pageNumber)
         {
             return _context.AwardDiplomas.Skip((pageNumber - 1) * Constant.Constant.PageSize)
                                             .Take(Constant.Constant.PageSize).ToList();
@@ -46,9 +46,9 @@ namespace WebBTL1.Repository
             return _context.AwardDiplomas.Count();
         }
 
-        public AwardDiploma? GetAwardDiplomaById(int diplomaId)
+        public AwardDiploma? GetAwardDiplomaById(int awardDiplomaId)
         {
-            return _context.AwardDiplomas.FirstOrDefault(m => m.Id == diplomaId);
+            return _context.AwardDiplomas.FirstOrDefault(m => m.Id == awardDiplomaId);
         }
 
         public int CountNumberOfDiplomaOfEachEmployee(int employeeId, int currentRecordId)

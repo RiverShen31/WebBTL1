@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using FluentValidation.Results;
 using WebBTL1.Models;
 using WebBTL1.Repository.Interface;
 
@@ -22,16 +21,16 @@ namespace WebBTL1.Validators
                 $"{Constant.Constant.MaxNumberOfDiplomasOfEachEmployee}");
 
             RuleFor(x => new { x.EmployeeId, x.DiplomaId })
-                .Must((awardDiploma, values) => BeUniqueDiplomaIdForEmployee(awardDiploma))
+                .Must((awardDiploma, _) => BeUniqueDiplomaIdForEmployee(awardDiploma))
                 .WithMessage("Duplicate DiplomaId for the same EmployeeId is not allowed");
         }
 
-        public bool IsValidNumberOfDiplomaOfEachEmployee(int employeeId, int currentRecordId)
+        private bool IsValidNumberOfDiplomaOfEachEmployee(int employeeId, int currentRecordId)
         {
             return _awardDiplomaRepo.CountNumberOfDiplomaOfEachEmployee(employeeId, currentRecordId) <= Constant.Constant.MaxNumberOfDiplomasOfEachEmployee -1;
         }
 
-        public bool BeUniqueDiplomaIdForEmployee(AwardDiploma awardDiploma)
+        private bool BeUniqueDiplomaIdForEmployee(AwardDiploma awardDiploma)
         {
             int employeeId = awardDiploma.EmployeeId;
             int diplomaId = awardDiploma.DiplomaId;

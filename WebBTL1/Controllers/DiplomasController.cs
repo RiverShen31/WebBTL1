@@ -1,10 +1,6 @@
-﻿using DocumentFormat.OpenXml.Office2010.Excel;
-using FluentValidation;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using WebBTL1.Models;
-using WebBTL1.Repository;
 using WebBTL1.Repository.Interface;
-using WebBTL1.Services;
 using WebBTL1.Services.Interface;
 using WebBTL1.Validators;
 

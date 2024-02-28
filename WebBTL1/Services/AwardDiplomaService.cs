@@ -1,6 +1,5 @@
 ﻿using WebBTL1.Models;
 using WebBTL1.Pagination;
-using WebBTL1.Repository;
 using WebBTL1.Repository.Interface;
 using WebBTL1.Services.Interface;
 using WebBTL1.Services.Validation;
@@ -41,11 +40,11 @@ namespace WebBTL1.Services
 
         public AwardDiplomaViewModel SetAwardDiplomaViewModel(AwardDiploma? awardDiploma)
         {
-            return new AwardDiplomaViewModel(awardDiploma.Id,
+            return new AwardDiplomaViewModel(awardDiploma!.Id,
                                              awardDiploma.EmployeeId,
-                                             _employeesRepo.GetEmployeeById(awardDiploma.EmployeeId).Name,
+                                             _employeesRepo.GetEmployeeById(awardDiploma.EmployeeId)!.Name,
                                              awardDiploma.DiplomaId,
-                                             _diplomaRepo.GetDiplomaById(awardDiploma.DiplomaId).Name,
+                                             _diplomaRepo.GetDiplomaById(awardDiploma.DiplomaId)!.Name,
                                              awardDiploma.DiplomaGrantingUnitId,
                                              _provinceRepo.GetProvinceNameByProvinceId(awardDiploma.DiplomaGrantingUnitId),
                                              awardDiploma.GrantingDate,
@@ -59,7 +58,7 @@ namespace WebBTL1.Services
 
         public PaginatedList<AwardDiplomaViewModel> PaginatedAwardDiplomaViewModel(int? pageNumber)
         {
-            return PaginatedList<AwardDiplomaViewModel>.Create(SetAwardDiplomaViewModelList(_awardDiplomaRepo.GetAwardDiplomaListByPageNumber(Validate.ValidatePageNumber(ref pageNumber))),
+            return PaginatedList<AwardDiplomaViewModel>.Create(SetAwardDiplomaViewModelList(_awardDiplomaRepo.GetAwardDiplomaListByPageNumber(Validate.ValidatePageNumber(ref pageNumber))!),
                                                         _awardDiplomaRepo.GetAwardDiplomaCount()
                                                     , Validate.ValidatePageNumber(ref pageNumber), Constant.Constant.PageSize);
         }

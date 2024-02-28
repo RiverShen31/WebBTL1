@@ -1,5 +1,4 @@
-﻿using WebBTL1.Controllers;
-using WebBTL1.Data;
+﻿using WebBTL1.Data;
 using WebBTL1.Models;
 using WebBTL1.Repository.Interface;
 

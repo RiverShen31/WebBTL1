@@ -12,7 +12,7 @@ namespace WebBTL1.Repository.Interface
 
         AwardDiploma Find(int id);
 
-        List<AwardDiploma?> GetAwardDiplomaListByPageNumber(int pageNumber);
+        List<AwardDiploma> GetAwardDiplomaListByPageNumber(int pageNumber);
 
         int GetAwardDiplomaCount();
 
